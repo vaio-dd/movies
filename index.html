@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🎬 Movie Gallery</h1>
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Search movies..." class="search-input">
+            </div>
+        </div>
+        <div class="filters">
+            <div class="filter-group">
+                <label>Year:</label>
+                <select id="yearFilter" class="filter-select">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Genre:</label>
+                <select id="genreFilter" class="filter-select">
+                    <option value="">All Genres</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Rating:</label>
+                <select id="ratingFilter" class="filter-select">
+                    <option value="">All Ratings</option>
+                    <option value="9">9+ Excellent</option>
+                    <option value="8">8+ Great</option>
+                    <option value="7">7+ Good</option>
+                    <option value="6">6+ Fair</option>
+                </select>
+            </div>
+            <button id="resetFilters" class="reset-btn">Reset Filters</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div id="movieGrid" class="movie-grid"></div>
+        <div id="noResults" class="no-results hidden">
+            <p>No movies found matching your criteria</p>
+        </div>
+    </main>
+
+    <!-- Movie Detail Modal -->
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Movie Gallery • 278 Movies Catalogued</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
