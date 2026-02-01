@@ -71,15 +71,16 @@ function getColorForMovie(title) {
     return colors[Math.abs(hash) % colors.length];
 }
 
-// Get poster URL or generate colored placeholder
+// Get poster URL or use the stored one
 function getPosterUrl(movie) {
-    if (movie.poster && movie.poster.includes('m.media-amazon.com')) {
+    // Use stored poster if available
+    if (movie.poster) {
         return movie.poster;
     }
     // Generate placeholder with movie title
     const color = getColorForMovie(movie.title);
     const encodedTitle = encodeURIComponent(movie.title);
-    return `https://via.placeholder.com/200x300/${color.replace('#', '')}/ffffff?text=${encodedTitle}`;
+    return `https://placehold.co/200x300/${color.replace('#', '')}/ffffff?text=${encodedTitle}`;
 }
 
 // Render movie grid
