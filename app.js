@@ -12,6 +12,7 @@ const searchInput = document.getElementById('search');
 const yearFilter = document.getElementById('yearFilter');
 const genreFilter = document.getElementById('genreFilter');
 const ratingFilter = document.getElementById('ratingFilter');
+const viewFilter = document.getElementById('viewFilter');
 const resetBtn = document.getElementById('resetFilters');
 const noResults = document.getElementById('noResults');
 const movieModal = document.getElementById('movieModal');
@@ -125,6 +126,67 @@ function renderMovies() {
     document.querySelectorAll('.movie-card').forEach(card => {
         card.addEventListener('click', () => {
             const movie = movies.find(m => m.title === card.dataset.id);
+            if (movie) showMovieDetail(movie);
+        });
+    });
+}
+
+// Render compact view - grouped by year, ordered by watch date
+function renderCompactView() {
+    if (filteredMovies.length === 0) {
+        movieGrid.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+    }
+    
+    noResults.classList.add('hidden');
+    
+    // Group movies by year
+    const groups = {};
+    filteredMovies.forEach(movie => {
+        const year = movie.year || 'Unknown';
+        if (!groups[year]) groups[year] = [];
+        groups[year].push(movie);
+    });
+    
+    // Sort years descending
+    const sortedYears = Object.keys(groups).sort((a, b) => {
+        if (a === 'Unknown') return 1;
+        if (b === 'Unknown') return -1;
+        return parseInt(b) - parseInt(a);
+    });
+    
+    movieGrid.innerHTML = sortedYears.map(year => `
+        <div class="year-group">
+            <div class="year-header">
+                <span class="year-badge">${year}</span>
+                <span class="year-count">${groups[year].length} movies</span>
+            </div>
+            <div class="compact-list">
+                ${groups[year].map(movie => `
+                    <div class="compact-item" data-id="${movie.title}">
+                        <img src="${getPosterUrl(movie)}" 
+                             alt="${movie.title}" 
+                             class="compact-poster"
+                             onerror="this.src='${getPosterUrl(movie)}'">
+                        <div class="compact-info">
+                            <div class="compact-title">${movie.title}</div>
+                            <div class="compact-meta">
+                                <span class="compact-date">${movie.watch_date ? formatWatchDate(movie.watch_date) : ''}</span>
+                                ${movie.imdb_rating ? `<span class="compact-rating">★ ${movie.imdb_rating}</span>` : ''}
+                                ${movie.genre ? `<span class="genre-tag">${movie.genre.split(',')[0]}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+    
+    // Add click listeners
+    document.querySelectorAll('.compact-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const movie = movies.find(m => m.title === item.dataset.id);
             if (movie) showMovieDetail(movie);
         });
     });
@@ -324,6 +386,7 @@ function filterMovies() {
     const yearValue = yearFilter.value;
     const genreValue = genreFilter.value;
     const ratingValue = ratingFilter.value;
+    const viewValue = viewFilter ? viewFilter.value : 'grid';
     
     filteredMovies = movies.filter(movie => {
         const matchesSearch = !searchTerm || 
@@ -338,7 +401,20 @@ function filterMovies() {
         return matchesSearch && matchesYear && matchesGenre && matchesRating;
     });
     
-    renderMovies();
+    // Sort by watch date for compact view
+    if (viewValue === 'compact') {
+        filteredMovies.sort((a, b) => {
+            const dateA = a.watch_date || '';
+            const dateB = b.watch_date || '';
+            return dateB.localeCompare(dateA); // Descending order
+        });
+    }
+    
+    if (viewValue === 'compact') {
+        renderCompactView();
+    } else {
+        renderMovies();
+    }
 }
 
 function resetFilters() {
@@ -412,6 +488,7 @@ function setupEventListeners() {
     yearFilter.addEventListener('change', filterMovies);
     genreFilter.addEventListener('change', filterMovies);
     ratingFilter.addEventListener('change', filterMovies);
+    if (viewFilter) viewFilter.addEventListener('change', filterMovies);
     resetBtn.addEventListener('click', resetFilters);
     
     navMovies.addEventListener('click', (e) => { e.preventDefault(); switchView('movies'); });

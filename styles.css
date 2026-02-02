@@ -546,3 +546,108 @@ body {
         width: 150px;
     }
 }
+
+/* Compact View */
+.compact-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.year-group {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.year-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.year-badge {
+    background: var(--accent);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.year-count {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.compact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.compact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.compact-item:hover {
+    transform: translateX(5px);
+    background: var(--bg-card);
+}
+
+.compact-poster {
+    width: 50px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.compact-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.compact-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.compact-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.compact-date {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.compact-rating {
+    background: var(--bg-secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.genre-tag {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
