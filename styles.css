@@ -88,6 +88,16 @@ body {
     border-radius: 8px;
     max-height: 60px;
     overflow-y: auto;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.filters.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    margin-top: 0;
+    max-height: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 .filter-group {

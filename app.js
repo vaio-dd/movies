@@ -429,6 +429,29 @@ function setupEventListeners() {
             closeStaffModal();
         }
     });
+    
+    // Auto-hide filters on scroll
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+                const filters = document.getElementById('movieFilters');
+                
+                if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                    filters.classList.add('hidden');
+                } else {
+                    filters.classList.remove('hidden');
+                }
+                
+                lastScrollY = currentScrollY;
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
 }
 
 init();
