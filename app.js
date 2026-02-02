@@ -131,7 +131,7 @@ function renderMovies() {
     });
 }
 
-// Render compact view - grouped by year, ordered by watch date
+// Render compact view - simple list ordered by watch date
 function renderCompactView() {
     if (filteredMovies.length === 0) {
         movieGrid.innerHTML = '';
@@ -141,47 +141,26 @@ function renderCompactView() {
     
     noResults.classList.add('hidden');
     
-    // Group movies by year
-    const groups = {};
-    filteredMovies.forEach(movie => {
-        const year = movie.year || 'Unknown';
-        if (!groups[year]) groups[year] = [];
-        groups[year].push(movie);
-    });
-    
-    // Sort years descending
-    const sortedYears = Object.keys(groups).sort((a, b) => {
-        if (a === 'Unknown') return 1;
-        if (b === 'Unknown') return -1;
-        return parseInt(b) - parseInt(a);
-    });
-    
-    movieGrid.innerHTML = sortedYears.map(year => `
-        <div class="year-group">
-            <div class="year-header">
-                <span class="year-badge">${year}</span>
-                <span class="year-count">${groups[year].length} movies</span>
-            </div>
-            <div class="compact-list">
-                ${groups[year].map(movie => `
-                    <div class="compact-item" data-id="${movie.title}">
-                        <img src="${getPosterUrl(movie)}" 
-                             alt="${movie.title}" 
-                             class="compact-poster"
-                             onerror="this.src='${getPosterUrl(movie)}'">
-                        <div class="compact-info">
-                            <div class="compact-title">${movie.title}</div>
-                            <div class="compact-meta">
-                                <span class="compact-date">${movie.watch_date ? formatWatchDate(movie.watch_date) : ''}</span>
-                                ${movie.imdb_rating ? `<span class="compact-rating">★ ${movie.imdb_rating}</span>` : ''}
-                                ${movie.genre ? `<span class="genre-tag">${movie.genre.split(',')[0]}</span>` : ''}
-                            </div>
+    movieGrid.innerHTML = `
+        <div class="compact-container">
+            ${filteredMovies.map(movie => `
+                <div class="compact-item" data-id="${movie.title}">
+                    <img src="${getPosterUrl(movie)}" 
+                         alt="${movie.title}" 
+                         class="compact-poster"
+                         onerror="this.src='${getPosterUrl(movie)}'">
+                    <div class="compact-info">
+                        <span class="compact-title">${movie.title}</span>
+                        <div class="compact-meta">
+                            <span class="compact-date">${movie.watch_date ? formatWatchDate(movie.watch_date) : ''}</span>
+                            ${movie.imdb_rating ? `<span class="compact-rating">★ ${movie.imdb_rating}</span>` : ''}
+                            ${movie.genre ? `<span class="compact-genre">${movie.genre.split(',')[0]}</span>` : ''}
                         </div>
                     </div>
-                `).join('')}
-            </div>
+                </div>
+            `).join('')}
         </div>
-    `).join('');
+    `;
     
     // Add click listeners
     document.querySelectorAll('.compact-item').forEach(item => {
