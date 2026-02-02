@@ -352,6 +352,7 @@ function resetFilters() {
 
 function switchView(view) {
     currentView = view;
+    const footerStats = document.getElementById('footerStats');
     
     if (view === 'movies') {
         navMovies.classList.add('active');
@@ -361,6 +362,7 @@ function switchView(view) {
         movieFilters.classList.remove('hidden');
         searchInput.placeholder = 'Search movies...';
         filteredMovies = [...movies];
+        footerStats.textContent = `Movie Gallery • ${movies.length} Movies • ${staff.length} Staff Members`;
         renderMovies();
     } else {
         navMovies.classList.remove('active');
@@ -369,6 +371,7 @@ function switchView(view) {
         staffGrid.classList.remove('hidden');
         movieFilters.classList.add('hidden');
         searchInput.placeholder = 'Search staff...';
+        footerStats.textContent = `Staff Directory • ${staff.length} Staff Members • ${movies.length} Movies`;
         renderStaff();
     }
 }
