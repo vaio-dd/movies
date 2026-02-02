@@ -1,10 +1,13 @@
-// Movie Gallery Application
+// Movie Gallery Application with Staff Support
 
 let movies = [];
+let staff = [];
 let filteredMovies = [];
+let currentView = 'movies';
 
 // DOM Elements
 const movieGrid = document.getElementById('movieGrid');
+const staffGrid = document.getElementById('staffGrid');
 const searchInput = document.getElementById('search');
 const yearFilter = document.getElementById('yearFilter');
 const genreFilter = document.getElementById('genreFilter');
@@ -14,26 +17,35 @@ const noResults = document.getElementById('noResults');
 const movieModal = document.getElementById('movieModal');
 const modalBody = document.getElementById('modalBody');
 const modalClose = document.getElementById('modalClose');
+const staffModal = document.getElementById('staffModal');
+const staffModalBody = document.getElementById('staffModalBody');
+const staffModalClose = document.getElementById('staffModalClose');
+const navMovies = document.getElementById('navMovies');
+const navStaff = document.getElementById('navStaff');
+const movieFilters = document.getElementById('movieFilters');
 
 // Initialize
 async function init() {
     try {
-        const response = await fetch('data/movies.json');
-        movies = await response.json();
+        const [moviesRes, staffRes] = await Promise.all([
+            fetch('data/movies.json'),
+            fetch('data/staff.json')
+        ]);
+        movies = await moviesRes.json();
+        staff = await staffRes.json();
         filteredMovies = [...movies];
         
         populateFilters();
         renderMovies();
         setupEventListeners();
     } catch (error) {
-        console.error('Failed to load movies:', error);
-        movieGrid.innerHTML = '<p class="no-results">Failed to load movies</p>';
+        console.error('Failed to load data:', error);
+        movieGrid.innerHTML = '<p class="no-results">Failed to load data</p>';
     }
 }
 
 // Populate filter dropdowns
 function populateFilters() {
-    // Get unique years
     const years = [...new Set(movies.map(m => m.year))].sort((a, b) => b - a);
     years.forEach(year => {
         const option = document.createElement('option');
@@ -42,7 +54,6 @@ function populateFilters() {
         yearFilter.appendChild(option);
     });
     
-    // Get unique genres
     const allGenres = movies.flatMap(m => m.genre ? m.genre.split(',').map(g => g.trim()) : []);
     const genres = [...new Set(allGenres)].sort();
     genres.forEach(genre => {
@@ -53,16 +64,15 @@ function populateFilters() {
     });
 }
 
-// Generate a consistent color based on movie title
-function getColorForMovie(title) {
+// Generate a consistent color based on title
+function getColorForTitle(title) {
     const colors = [
-        '#1a237e', '#283593', '#303f9f', '#3949ab', '#3f51b5', // Blue
-        '#1b5e20', '#2e7d32', '#388e3c', '#43a047', '#4caf50', // Green
-        '#b71c1c', '#c62828', '#d32f2f', '#e53935', '#ef5350', // Red
-        '#4a148c', '#6a1b9a', '#7b1fa2', '#8e24aa', '#ab47bc', // Purple
-        '#e65100', '#f57c00', '#ff9800', '#ffa726', '#ffb74d', // Orange
-        '#006064', '#00838f', '#0097a7', '#00acc1', '#00bcd4', // Cyan
-        '#4e342e', '#5d4037', '#6d4c41', '#795548', '#8d6e63', // Brown
+        '#1a237e', '#283593', '#303f9f', '#3949ab', '#3f51b5',
+        '#1b5e20', '#2e7d32', '#388e3c', '#43a047', '#4caf50',
+        '#b71c1c', '#c62828', '#d32f2f', '#e53935', '#ef5350',
+        '#4a148c', '#6a1b9a', '#7b1fa2', '#8e24aa', '#ab47bc',
+        '#e65100', '#f57c00', '#ff9800', '#ffa726', '#ffb74d',
+        '#006064', '#00838f', '#0097a7', '#00acc1', '#00bcd4',
     ];
     let hash = 0;
     for (let i = 0; i < title.length; i++) {
@@ -71,16 +81,16 @@ function getColorForMovie(title) {
     return colors[Math.abs(hash) % colors.length];
 }
 
-// Get poster URL or use the stored one
 function getPosterUrl(movie) {
-    // Use stored poster if available
-    if (movie.poster) {
-        return movie.poster;
-    }
-    // Generate placeholder with movie title
-    const color = getColorForMovie(movie.title);
-    const encodedTitle = encodeURIComponent(movie.title);
-    return `https://placehold.co/200x300/${color.replace('#', '')}/ffffff?text=${encodedTitle}`;
+    if (movie.poster) return movie.poster;
+    const color = getColorForTitle(movie.title);
+    return `https://placehold.co/200x300/${color.replace('#', '')}/ffffff?text=${encodeURIComponent(movie.title)}`;
+}
+
+function getStaffImageUrl(staffMember) {
+    if (staffMember.image) return staffMember.image;
+    const color = getColorForTitle(staffMember.name);
+    return `https://placehold.co/200x300/${color.replace('#', '')}/ffffff?text=${encodeURIComponent(staffMember.name.substring(0, 10))}`;
 }
 
 // Render movie grid
@@ -112,7 +122,6 @@ function renderMovies() {
         </div>
     `).join('');
     
-    // Add click listeners
     document.querySelectorAll('.movie-card').forEach(card => {
         card.addEventListener('click', () => {
             const movie = movies.find(m => m.title === card.dataset.id);
@@ -121,8 +130,58 @@ function renderMovies() {
     });
 }
 
+// Render staff grid
+function renderStaff() {
+    if (staff.length === 0) {
+        staffGrid.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+    }
+    
+    noResults.classList.add('hidden');
+    
+    staffGrid.innerHTML = staff.map(member => `
+        <div class="staff-card" data-name="${member.name}">
+            <img src="${getStaffImageUrl(member)}" 
+                 alt="${member.name}" 
+                 class="staff-photo"
+                 onerror="this.src='${getStaffImageUrl(member)}'">
+            <div class="staff-info">
+                <h3 class="staff-name">${member.name}</h3>
+                <span class="staff-role">${member.role || 'Staff'}</span>
+                <span class="staff-count">${member.filmography?.length || 0} films</span>
+            </div>
+        </div>
+    `).join('');
+    
+    document.querySelectorAll('.staff-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const member = staff.find(s => s.name === card.dataset.name);
+            if (member) showStaffDetail(member);
+        });
+    });
+}
+
 // Show movie detail modal
 function showMovieDetail(movie) {
+    // Create clickable staff links
+    const actorLinks = movie.actors ? movie.actors.split(',').map(a => {
+        const name = a.trim().replace('[[', '').replace(']]', '');
+        const staffMember = staff.find(s => s.name === name);
+        if (staffMember) {
+            return `<a href="#" class="staff-link" data-staff="${name}">${name}</a>`;
+        }
+        return name;
+    }).join(', ') : '';
+    
+    const directorLink = movie.director ? (() => {
+        const staffMember = staff.find(s => s.name === movie.director);
+        if (staffMember) {
+            return `<a href="#" class="staff-link" data-staff="${movie.director}">${movie.director}</a>`;
+        }
+        return movie.director;
+    })() : '';
+    
     modalBody.innerHTML = `
         <div class="modal-header">
             <img src="${getPosterUrl(movie)}" 
@@ -136,22 +195,21 @@ function showMovieDetail(movie) {
                     ${movie.imdb_rating ? `<span class="meta-tag"><strong>Rating:</strong> ★ ${movie.imdb_rating}</span>` : ''}
                     ${movie.genre ? `<span class="meta-tag"><strong>Genre:</strong> ${movie.genre}</span>` : ''}
                     ${movie.country ? `<span class="meta-tag"><strong>Country:</strong> ${movie.country}</span>` : ''}
-                    ${movie.runtime ? `<span class="meta-tag"><strong>Runtime:</strong> ${movie.runtime} min</span>` : ''}
                 </div>
             </div>
         </div>
         
-        ${movie.director ? `
+        ${directorLink ? `
             <div class="modal-section">
                 <h3>Director</h3>
-                <p>${movie.director}</p>
+                <p>${directorLink}</p>
             </div>
         ` : ''}
         
-        ${movie.actors ? `
+        ${actorLinks ? `
             <div class="modal-section">
                 <h3>Cast</h3>
-                <p>${movie.actors.replace(/\[\[/g, '').replace(/\]\]/g, '')}</p>
+                <p>${actorLinks}</p>
             </div>
         ` : ''}
         
@@ -168,20 +226,86 @@ function showMovieDetail(movie) {
         </div>
     `;
     
+    // Add click listeners for staff links
+    document.querySelectorAll('.staff-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const staffName = link.dataset.staff;
+            const staffMember = staff.find(s => s.name === staffName);
+            if (staffMember) {
+                closeModal();
+                showStaffDetail(staffMember);
+            }
+        });
+    });
+    
     movieModal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
-// Close modal
+// Show staff detail modal
+function showStaffDetail(member) {
+    const filmographyList = member.filmography?.map(title => {
+        const movie = movies.find(m => m.title === title);
+        if (movie) {
+            return `<a href="#" class="movie-link" data-movie="${title}">${title} (${movie.year})</a>`;
+        }
+        return `<span>${title}</span>`;
+    }).join(', ') || '';
+    
+    staffModalBody.innerHTML = `
+        <div class="modal-header">
+            <img src="${getStaffImageUrl(member)}" 
+                 alt="${member.name}" 
+                 class="modal-poster"
+                 onerror="this.src='${getStaffImageUrl(member)}'">
+            <div class="modal-info">
+                <h2>${member.name}</h2>
+                <div class="modal-meta">
+                    ${member.role ? `<span class="meta-tag"><strong>Role:</strong> ${member.role}</span>` : ''}
+                    ${member.birth_date ? `<span class="meta-tag"><strong>Born:</strong> ${member.birth_date}</span>` : ''}
+                    ${member.birth_place ? `<span class="meta-tag"><strong>Place:</strong> ${member.birth_place}</span>` : ''}
+                </div>
+            </div>
+        </div>
+        
+        ${member.filmography?.length > 0 ? `
+            <div class="modal-section">
+                <h3>Filmography (${member.filmography.length} films)</h3>
+                <p>${filmographyList}</p>
+            </div>
+        ` : ''}
+    `;
+    
+    // Add click listeners for movie links
+    document.querySelectorAll('.movie-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const movieTitle = link.dataset.movie;
+            const movie = movies.find(m => m.title === movieTitle);
+            if (movie) {
+                closeStaffModal();
+                showMovieDetail(movie);
+            }
+        });
+    });
+    
+    staffModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
 function closeModal() {
     movieModal.classList.remove('active');
     document.body.style.overflow = '';
 }
 
-// Format watch date
+function closeStaffModal() {
+    staffModal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
 function formatWatchDate(dateStr) {
     if (!dateStr) return '';
-    // Handle format like "2026-01-31 Friday"
     const match = dateStr.match(/(\d{4}-\d{2}-\d{2})/);
     if (match) {
         const date = new Date(match[1]);
@@ -195,7 +319,6 @@ function formatWatchDate(dateStr) {
     return dateStr;
 }
 
-// Filter movies
 function filterMovies() {
     const searchTerm = searchInput.value.toLowerCase();
     const yearValue = yearFilter.value;
@@ -203,22 +326,14 @@ function filterMovies() {
     const ratingValue = ratingFilter.value;
     
     filteredMovies = movies.filter(movie => {
-        // Search filter
         const matchesSearch = !searchTerm || 
             movie.title.toLowerCase().includes(searchTerm) ||
             (movie.genre && movie.genre.toLowerCase().includes(searchTerm)) ||
             (movie.director && movie.director.toLowerCase().includes(searchTerm));
         
-        // Year filter
         const matchesYear = !yearValue || movie.year === parseInt(yearValue);
-        
-        // Genre filter
-        const matchesGenre = !genreValue || 
-            (movie.genre && movie.genre.includes(genreValue));
-        
-        // Rating filter
-        const matchesRating = !ratingValue || 
-            (movie.imdb_rating && movie.imdb_rating >= parseFloat(ratingValue));
+        const matchesGenre = !genreValue || (movie.genre && movie.genre.includes(genreValue));
+        const matchesRating = !ratingValue || (movie.imdb_rating && movie.imdb_rating >= parseFloat(ratingValue));
         
         return matchesSearch && matchesYear && matchesGenre && matchesRating;
     });
@@ -226,7 +341,6 @@ function filterMovies() {
     renderMovies();
 }
 
-// Reset filters
 function resetFilters() {
     searchInput.value = '';
     yearFilter.value = '';
@@ -236,23 +350,82 @@ function resetFilters() {
     renderMovies();
 }
 
-// Setup event listeners
+function switchView(view) {
+    currentView = view;
+    
+    if (view === 'movies') {
+        navMovies.classList.add('active');
+        navStaff.classList.remove('active');
+        movieGrid.classList.remove('hidden');
+        staffGrid.classList.add('hidden');
+        movieFilters.classList.remove('hidden');
+        searchInput.placeholder = 'Search movies...';
+        filteredMovies = [...movies];
+        renderMovies();
+    } else {
+        navMovies.classList.remove('active');
+        navStaff.classList.add('active');
+        movieGrid.classList.add('hidden');
+        staffGrid.classList.remove('hidden');
+        movieFilters.classList.add('hidden');
+        searchInput.placeholder = 'Search staff...';
+        renderStaff();
+    }
+}
+
 function setupEventListeners() {
-    searchInput.addEventListener('input', filterMovies);
+    searchInput.addEventListener('input', () => {
+        if (currentView === 'movies') {
+            filterMovies();
+        } else {
+            const term = searchInput.value.toLowerCase();
+            const filtered = staff.filter(s => 
+                s.name.toLowerCase().includes(term) ||
+                (s.role && s.role.toLowerCase().includes(term))
+            );
+            staffGrid.innerHTML = filtered.map(member => `
+                <div class="staff-card" data-name="${member.name}">
+                    <img src="${getStaffImageUrl(member)}" 
+                         alt="${member.name}" 
+                         class="staff-photo"
+                         onerror="this.src='${getStaffImageUrl(member)}'">
+                    <div class="staff-info">
+                        <h3 class="staff-name">${member.name}</h3>
+                        <span class="staff-role">${member.role || 'Staff'}</span>
+                        <span class="staff-count">${member.filmography?.length || 0} films</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.staff-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const member = staff.find(s => s.name === card.dataset.name);
+                    if (member) showStaffDetail(member);
+                });
+            });
+        }
+    });
+    
     yearFilter.addEventListener('change', filterMovies);
     genreFilter.addEventListener('change', filterMovies);
     ratingFilter.addEventListener('change', filterMovies);
     resetBtn.addEventListener('click', resetFilters);
     
+    navMovies.addEventListener('click', (e) => { e.preventDefault(); switchView('movies'); });
+    navStaff.addEventListener('click', (e) => { e.preventDefault(); switchView('staff'); });
+    
     modalClose.addEventListener('click', closeModal);
-    movieModal.addEventListener('click', (e) => {
-        if (e.target === movieModal) closeModal();
-    });
+    movieModal.addEventListener('click', (e) => { if (e.target === movieModal) closeModal(); });
+    
+    staffModalClose.addEventListener('click', closeStaffModal);
+    staffModal.addEventListener('click', (e) => { if (e.target === staffModal) closeStaffModal(); });
     
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
+        if (e.key === 'Escape') {
+            closeModal();
+            closeStaffModal();
+        }
     });
 }
 
-// Start the app
 init();

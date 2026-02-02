@@ -390,6 +390,108 @@ body {
     margin-top: auto;
 }
 
+/* Navigation */
+.nav-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-primary);
+}
+
+.nav-link.active {
+    color: var(--accent);
+    background: var(--bg-primary);
+}
+
+/* Staff Grid */
+.staff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+
+.staff-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.staff-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 30px rgba(233, 69, 96, 0.2);
+}
+
+.staff-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.staff-card:hover .staff-photo {
+    transform: scale(1.05);
+}
+
+.staff-info {
+    padding: 1rem;
+}
+
+.staff-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: var(--text-primary);
+}
+
+.staff-role {
+    display: block;
+    color: var(--accent);
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+}
+
+.staff-count {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Staff Links */
+.staff-link {
+    color: var(--accent) !important;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.staff-link:hover {
+    text-decoration: underline;
+    color: var(--accent-hover) !important;
+}
+
+.movie-link {
+    color: var(--accent);
+    text-decoration: none;
+    margin-right: 0.5rem;
+}
+
+.movie-link:hover {
+    text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .header {

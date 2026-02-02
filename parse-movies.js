@@ -9,7 +9,6 @@ function parseMovieFile(content) {
   if (frontmatterMatch) {
     const frontmatter = frontmatterMatch[1];
     
-    // Parse individual fields
     const titleMatch = frontmatter.match(/title:\s*(.+)/);
     if (titleMatch) movie.title = titleMatch[1].trim();
     
@@ -40,12 +39,52 @@ function parseMovieFile(content) {
     const memoMatch = frontmatter.match(/memo:\s*(.+)/);
     if (memoMatch) movie.memo = memoMatch[1].trim();
     
-    // Extract poster URL
     const posterMatch = frontmatter.match(/poster:\s*!\[.*\]\((.+)\)/);
     if (posterMatch) movie.poster = posterMatch[1];
   }
   
   return movie;
+}
+
+function parseStaffFile(content, filename) {
+  const staff = {
+    name: filename.replace('.md', ''),
+    filmography: []
+  };
+  
+  // Extract YAML frontmatter
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  if (frontmatterMatch) {
+    const frontmatter = frontmatterMatch[1];
+    
+    const nameMatch = frontmatter.match(/name:\s*(.+)/);
+    if (nameMatch) staff.name = nameMatch[1].trim();
+    
+    const roleMatch = frontmatter.match(/role:\s*(.+)/);
+    if (roleMatch) staff.role = roleMatch[1].trim();
+    
+    const birthDateMatch = frontmatter.match(/birth_date:\s*(.+)/);
+    if (birthDateMatch) staff.birth_date = birthDateMatch[1].trim();
+    
+    const birthPlaceMatch = frontmatter.match(/birth_place:\s*(.+)/);
+    if (birthPlaceMatch) staff.birth_place = birthPlaceMatch[1].trim();
+    
+    const imageMatch = frontmatter.match(/image:\s*(.+)/);
+    if (imageMatch) staff.image = imageMatch[1].trim();
+    
+    const tmdbIdMatch = frontmatter.match(/tmdb_id:\s*(.+)/);
+    if (tmdbIdMatch) staff.tmdb_id = tmdbIdMatch[1].trim();
+  }
+  
+  // Extract filmography from wikilinks
+  const filmographyMatches = content.match(/\[\[([^\]]+)\]\]/g);
+  if (filmographyMatches) {
+    staff.filmography = filmographyMatches.map(link => {
+      return link.replace('[[', '').replace(']]', '');
+    });
+  }
+  
+  return staff;
 }
 
 function parseAllMovies() {
@@ -64,6 +103,22 @@ function parseAllMovies() {
   return movies;
 }
 
+function parseAllStaff() {
+  const staffDir = path.join(__dirname, '../obsidian/Staff');
+  const files = fs.readdirSync(staffDir).filter(f => f.endsWith('.md'));
+  
+  const staff = [];
+  for (const file of files) {
+    const content = fs.readFileSync(path.join(staffDir, file), 'utf8');
+    const member = parseStaffFile(content, file);
+    if (member.name) {
+      staff.push(member);
+    }
+  }
+  
+  return staff;
+}
+
 // Run if executed directly
 if (require.main === module) {
   const movies = parseAllMovies();
@@ -72,6 +127,13 @@ if (require.main === module) {
     JSON.stringify(movies, null, 2)
   );
   console.log(`Parsed ${movies.length} movies`);
+  
+  const staff = parseAllStaff();
+  fs.writeFileSync(
+    path.join(__dirname, 'data/staff.json'),
+    JSON.stringify(staff, null, 2)
+  );
+  console.log(`Parsed ${staff.length} staff members`);
 }
 
-module.exports = { parseAllMovies };
+module.exports = { parseAllMovies, parseAllStaff };
