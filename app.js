@@ -4,6 +4,7 @@ let movies = [];
 let staff = [];
 let filteredMovies = [];
 let currentView = 'movies';
+let listViewMode = 'compact'; // 'grid' or 'compact'
 
 // DOM Elements
 const movieGrid = document.getElementById('movieGrid');
@@ -12,7 +13,8 @@ const searchInput = document.getElementById('search');
 const yearFilter = document.getElementById('yearFilter');
 const genreFilter = document.getElementById('genreFilter');
 const ratingFilter = document.getElementById('ratingFilter');
-const viewFilter = document.getElementById('viewFilter');
+const viewGrid = document.getElementById('viewGrid');
+const viewCompact = document.getElementById('viewCompact');
 const resetBtn = document.getElementById('resetFilters');
 const noResults = document.getElementById('noResults');
 const movieModal = document.getElementById('movieModal');
@@ -39,6 +41,12 @@ async function init() {
         populateFilters();
         renderMovies();
         setupEventListeners();
+        
+        // Set compact view as default
+        listViewMode = 'compact';
+        viewCompact.classList.add('active');
+        viewGrid.classList.remove('active');
+        renderMovies();
     } catch (error) {
         console.error('Failed to load data:', error);
         movieGrid.innerHTML = '<p class="no-results">Failed to load data</p>';
@@ -103,6 +111,12 @@ function renderMovies() {
     }
     
     noResults.classList.add('hidden');
+    
+    // Use compact view by default
+    if (listViewMode === 'compact') {
+        renderCompactView();
+        return;
+    }
     
     movieGrid.innerHTML = filteredMovies.map(movie => `
         <div class="movie-card" data-id="${movie.title}">
@@ -365,7 +379,7 @@ function filterMovies() {
     const yearValue = yearFilter.value;
     const genreValue = genreFilter.value;
     const ratingValue = ratingFilter.value;
-    const viewValue = viewFilter ? viewFilter.value : 'grid';
+    const viewValue = listViewMode;
     
     filteredMovies = movies.filter(movie => {
         const matchesSearch = !searchTerm || 
@@ -467,7 +481,22 @@ function setupEventListeners() {
     yearFilter.addEventListener('change', filterMovies);
     genreFilter.addEventListener('change', filterMovies);
     ratingFilter.addEventListener('change', filterMovies);
-    if (viewFilter) viewFilter.addEventListener('change', filterMovies);
+    
+    // View toggle buttons
+    viewGrid.addEventListener('click', () => {
+        listViewMode = 'grid';
+        viewGrid.classList.add('active');
+        viewCompact.classList.remove('active');
+        renderMovies();
+    });
+    
+    viewCompact.addEventListener('click', () => {
+        listViewMode = 'compact';
+        viewCompact.classList.add('active');
+        viewGrid.classList.remove('active');
+        renderMovies();
+    });
+    
     resetBtn.addEventListener('click', resetFilters);
     
     navMovies.addEventListener('click', (e) => { e.preventDefault(); switchView('movies'); });

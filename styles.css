@@ -112,6 +112,41 @@ body {
     white-space: nowrap;
 }
 
+.view-toggle {
+    display: flex;
+    gap: 2px;
+}
+
+.view-btn {
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-muted);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.view-btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.view-btn:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.view-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.view-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
 .filter-select {
     padding: 0.35rem 0.5rem;
     border: 1px solid var(--border-color);
