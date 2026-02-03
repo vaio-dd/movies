@@ -118,6 +118,7 @@ function renderMovies() {
         return;
     }
     
+    movieGrid.classList.remove('compact');
     movieGrid.innerHTML = filteredMovies.map(movie => `
         <div class="movie-card" data-id="${movie.title}">
             <div class="poster-container">
@@ -133,6 +134,11 @@ function renderMovies() {
                     <span class="movie-year">${movie.year}</span>
                 </div>
                 ${movie.watch_date ? `<div class="watch-date">📅 ${formatWatchDate(movie.watch_date)}</div>` : ''}
+                <div class="card-extra">
+                    ${movie.director ? `<div class="card-director">🎬 ${movie.director}</div>` : ''}
+                    ${movie.genre ? `<div class="card-genre">${movie.genre.split(',')[0]}</div>` : ''}
+                    ${movie.actors && movie.actors !== '[]' ? `<div class="card-actors">🎭 ${movie.actors.replace(/\[\[|\]\]/g, '')}</div>` : ''}
+                </div>
             </div>
         </div>
     `).join('');
@@ -155,6 +161,7 @@ function renderCompactView() {
     
     noResults.classList.add('hidden');
     
+    movieGrid.classList.add('compact');
     movieGrid.innerHTML = `
         <div class="compact-container">
             ${filteredMovies.map(movie => `
@@ -170,6 +177,10 @@ function renderCompactView() {
                             ${movie.imdb_rating ? `<span class="compact-rating">★ ${movie.imdb_rating}</span>` : ''}
                             ${movie.genre ? `<span class="compact-genre">${movie.genre.split(',')[0]}</span>` : ''}
                         </div>
+                    </div>
+                    <div class="compact-extra">
+                        ${movie.director ? `<span class="compact-director" title="${movie.director}">🎬 ${movie.director}</span>` : ''}
+                        ${movie.actors && movie.actors !== '[]' ? `<span class="compact-actors" title="${movie.actors.replace(/\[\[|\]\]/g, '')}">🎭 ${movie.actors.replace(/\[\[|\]\]/g, '')}</span>` : ''}
                     </div>
                 </div>
             `).join('')}

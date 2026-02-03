@@ -44,7 +44,7 @@ body {
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
-    max-width: 1400px;
+    max-width: 1800px;
     margin: 0 auto;
 }
 
@@ -81,7 +81,7 @@ body {
     gap: 0.75rem;
     align-items: center;
     flex-wrap: wrap;
-    max-width: 1400px;
+    max-width: 1800px;
     margin: 0.75rem auto 0;
     padding: 0.5rem 0.75rem;
     background: var(--bg-secondary);
@@ -184,17 +184,52 @@ body {
 /* Main Content */
 .main-content {
     flex: 1;
-    max-width: 1400px;
+    max-width: 1800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 2.5rem;
     width: 100%;
 }
 
 /* Movie Grid */
 .movie-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 1.5rem;
+}
+
+/* Compact mode - single column list */
+.movie-grid.compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+/* Medium screens */
+@media (min-width: 1200px) {
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.75rem;
+    }
+}
+
+/* Extra large screens */
+@media (min-width: 2000px) {
+    .main-content {
+        padding: 2rem 4rem;
+    }
+    
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 2rem;
+    }
 }
 
 /* Movie Card */
@@ -275,6 +310,58 @@ body {
     color: var(--accent);
     font-size: 0.8rem;
     margin-top: 0.5rem;
+}
+
+/* Extra details shown on larger screens */
+.card-extra {
+    display: none;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.card-director {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.card-genre {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-style: italic;
+}
+
+/* Show extra details on medium+ screens */
+@media (min-width: 1200px) {
+    .card-extra {
+        display: block;
+    }
+    
+    .movie-card {
+        padding: 0.5rem;
+    }
+    
+    .card-content {
+        padding: 0.75rem;
+    }
+}
+
+/* Show actors on large screens */
+.card-actors {
+    display: none;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    margin-top: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 1600px) {
+    .card-actors {
+        display: block;
+    }
 }
 
 /* No Results */
@@ -583,6 +670,7 @@ body {
 }
 
 /* Compact View */
+/* Compact View */
 .compact-container {
     display: flex;
     flex-direction: column;
@@ -598,6 +686,7 @@ body {
     border-radius: 6px;
     cursor: pointer;
     transition: var(--transition);
+    width: 100%;
 }
 
 .compact-item:hover {
@@ -617,19 +706,20 @@ body {
     flex: 1;
     min-width: 0;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem 1rem;
+    justify-content: space-between;
 }
 
 .compact-title {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
-    flex: 1;
+    flex: 1 1 200px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 150px;
 }
 
 .compact-meta {
@@ -638,22 +728,55 @@ body {
     gap: 0.75rem;
     color: var(--text-muted);
     font-size: 0.85rem;
+    flex-wrap: wrap;
 }
 
 .compact-date {
     color: var(--accent);
-    min-width: 100px;
 }
 
 .compact-rating {
     background: var(--bg-primary);
     padding: 2px 8px;
     border-radius: 4px;
-    min-width: 40px;
-    text-align: center;
 }
 
 .compact-genre {
     color: var(--text-secondary);
     font-size: 0.8rem;
+}
+
+/* Extra compact info on larger screens */
+.compact-extra {
+    display: none;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.compact-director {
+    color: var(--text-secondary);
+}
+
+.compact-actors {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+@media (min-width: 1200px) {
+    .compact-extra {
+        display: flex;
+    }
+    
+    .compact-item {
+        padding: 0.75rem 1rem;
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 1600px) {
+    .compact-title {
+        flex: 1 1 300px;
+    }
 }
