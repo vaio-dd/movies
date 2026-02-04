@@ -405,16 +405,15 @@ function filterMovies() {
         return matchesSearch && matchesYear && matchesGenre && matchesRating;
     });
     
-    // Sort by watch date for compact view
-    if (viewValue === 'compact') {
-        filteredMovies.sort((a, b) => {
-            const dateA = a.watch_date || '';
-            const dateB = b.watch_date || '';
-            return dateB.localeCompare(dateA); // Descending order
-        });
-    }
+    // Always sort by watch date (descending - newest first)
+    filteredMovies.sort((a, b) => {
+        const dateA = a.watch_date || '';
+        const dateB = b.watch_date || '';
+        return dateB.localeCompare(dateA);
+    });
     
-    if (viewValue === 'compact') {
+    // Render based on view mode
+    if (listViewMode === 'compact') {
         renderCompactView();
     } else {
         renderMovies();
