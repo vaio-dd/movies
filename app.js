@@ -525,7 +525,7 @@ function setupEventListeners() {
         }
     });
     
-    // Auto-hide filters on scroll
+    // Auto-hide header on mobile scroll
     let lastScrollY = window.scrollY;
     let ticking = false;
     
@@ -533,12 +533,15 @@ function setupEventListeners() {
         if (!ticking) {
             window.requestAnimationFrame(() => {
                 const currentScrollY = window.scrollY;
-                const filters = document.getElementById('movieFilters');
+                const header = document.querySelector('.header');
+                const isMobile = window.innerWidth <= 768;
                 
-                if (currentScrollY > lastScrollY && currentScrollY > 100) {
-                    filters.classList.add('hidden');
+                if (isMobile && currentScrollY > lastScrollY && currentScrollY > 100) {
+                    // Scrolling down - hide header
+                    header.classList.add('header-hidden');
                 } else {
-                    filters.classList.remove('hidden');
+                    // Scrolling up - show header
+                    header.classList.remove('header-hidden');
                 }
                 
                 lastScrollY = currentScrollY;

@@ -633,6 +633,11 @@ body {
 @media (max-width: 768px) {
     .header {
         padding: 1rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .header.header-hidden {
+        transform: translateY(-100%);
     }
     
     .header-content {

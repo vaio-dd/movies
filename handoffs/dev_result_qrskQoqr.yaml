@@ -1,0 +1,42 @@
+---
+type: dev_result
+ticket: https://trello.com/c/QrskQoqr
+title: "Mobile Header Scroll Behavior"
+list: doing
+date: 2026-02-06
+
+changes:
+  - file: styles.css
+    description: Added mobile-responsive header-hidden class with transform for hide animation
+    lines: "~640-647"
+  - file: app.js
+    description: Added scroll direction detection and header show/hide logic for mobile
+    lines: "~528-548"
+
+gherkin:
+  - |
+    given: User is on mobile device viewing movie list
+    when: user scrolls down the page
+    then: header scrolls out of view
+
+  - |
+    given: User scrolls up on mobile
+    when: header is not visible
+    then: header scrolls back into view
+
+  - |
+    given: User is at top of page
+    when: header is visible
+    then: all search/filter controls remain accessible
+
+implementation:
+  - Mobile check: window.innerWidth <= 768
+  - Hide threshold: scrollY > 100px from top
+  - Transition: 0.3s ease transform
+  - Hides full header (logo, nav, search, filters)
+  - Shows header on any upward scroll
+
+notes:
+  - Replaces previous "auto-hide filters only" behavior
+  - Full header hides for better mobile viewing experience
+  - Ready for QA review
