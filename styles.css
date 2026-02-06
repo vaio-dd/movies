@@ -870,7 +870,7 @@ body {
 }
 
 .ultra-date {
-    color: var(--text-muted);
+    color: #5dade2;
     font-size: 0.85rem;
     min-width: 45px;
     text-align: right;
