@@ -886,11 +886,11 @@ body {
 
 .ultra-compact-year-header {
     background: var(--bg-card);
-    color: var(--accent);
+    color: #5dade2;
     padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
     font-weight: 600;
-    border-left: 3px solid var(--accent);
+    border-left: 3px solid #5dade2;
     margin: 0.5rem 0 0.25rem;
 }
 
