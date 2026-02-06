@@ -860,14 +860,6 @@ body {
     flex-shrink: 0;
 }
 
-.ultra-genre {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    flex-shrink: 0;
-    text-align: right;
-    min-width: 80px;
-}
-
 .ultra-title {
     flex: 1;
     font-weight: 600;
@@ -882,6 +874,14 @@ body {
     font-size: 0.85rem;
     min-width: 45px;
     text-align: right;
+}
+
+.ultra-genre {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 80px;
 }
 
 .ultra-compact-year-header {

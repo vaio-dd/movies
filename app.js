@@ -280,8 +280,8 @@ function renderUltraCompactView() {
                 <div class="ultra-compact-item" data-id="${movie.title}">
                     <span class="ultra-num">${globalCounter}.</span>
                     <span class="ultra-title">${movie.title}</span>
-                    <span class="ultra-genre">${movie.genre ? movie.genre.split(',')[0] : ''}</span>
                     <span class="ultra-date">${mmdd}</span>
+                    <span class="ultra-genre">${movie.genre ? movie.genre.split(',')[0] : ''}</span>
                 </div>
             `;
             globalCounter++;
