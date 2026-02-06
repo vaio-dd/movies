@@ -261,7 +261,7 @@ function renderUltraCompactView() {
         // Use first movie's title in year header
         const firstMovieTitle = moviesInYear[0].title;
         
-        html += `<div class="ultra-compact-year-header">${firstMovieTitle} ——${year}（${moviesInYear.length}部） ——</div>`;
+        html += `<div class="ultra-compact-year-header">${year}（${moviesInYear.length}部）</div>`;
         
         moviesInYear.forEach(movie => {
             // Extract MMDD from watch_date
