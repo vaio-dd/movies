@@ -217,7 +217,7 @@ function renderCompactView() {
     });
 }
 
-// Render ultra-compact view - single line per movie, no posters
+// Render ultra-compact view - single line per movie, no posters, grouped by year
 function renderUltraCompactView() {
     if (filteredMovies.length === 0) {
         movieGrid.innerHTML = '';
@@ -227,18 +227,66 @@ function renderUltraCompactView() {
     
     noResults.classList.add('hidden');
     
+    // Group movies by year
+    const moviesByYear = {};
+    filteredMovies.forEach(movie => {
+        const year = movie.year || 'Unknown';
+        if (!moviesByYear[year]) {
+            moviesByYear[year] = [];
+        }
+        moviesByYear[year].push(movie);
+    });
+    
+    // Sort years in descending order (newest year first)
+    const sortedYears = Object.keys(moviesByYear).sort((a, b) => {
+        return parseInt(b) - parseInt(a);
+    });
+    
+    // Sort movies within each year chronologically by watch_date (MMDD)
+    Object.keys(moviesByYear).forEach(year => {
+        moviesByYear[year].sort((a, b) => {
+            const dateA = a.watch_date ? a.watch_date.split(' ')[0] : '';
+            const dateB = b.watch_date ? b.watch_date.split(' ')[0] : '';
+            return dateA.localeCompare(dateB);
+        });
+    });
+    
     movieGrid.classList.add('ultra-compact');
-    movieGrid.innerHTML = `
-        <div class="compact-container ultra-compact">
-            ${filteredMovies.map(movie => `
-                <div class="compact-item ultra-compact-item" data-id="${movie.title}">
-                    <span class="ultra-date">${movie.watch_date ? movie.watch_date.split(" ")[0] : ''}</span>
+    
+    let html = '<div class="ultra-compact-container">';
+    let globalCounter = 1;
+    
+    sortedYears.forEach(year => {
+        const moviesInYear = moviesByYear[year];
+        // Use first movie's title in year header
+        const firstMovieTitle = moviesInYear[0].title;
+        
+        html += `<div class="ultra-compact-year-header">${firstMovieTitle} ——${year}（${moviesInYear.length}部） ——</div>`;
+        
+        moviesInYear.forEach(movie => {
+            // Extract MMDD from watch_date
+            let mmdd = '';
+            if (movie.watch_date) {
+                const parts = movie.watch_date.split(' ');
+                if (parts.length > 0) {
+                    mmdd = parts[0].substring(5); // Get MM-DD from YYYY-MM-DD
+                }
+            }
+            
+            html += `
+                <div class="ultra-compact-item" data-id="${movie.title}">
+                    <span class="ultra-num">${globalCounter}.</span>
                     <span class="ultra-title">${movie.title}</span>
                     <span class="ultra-genre">${movie.genre ? movie.genre.split(',')[0] : ''}</span>
+                    <span class="ultra-date">${mmdd}</span>
                 </div>
-            `).join('')}
-        </div>
-    `;
+            `;
+            globalCounter++;
+        });
+    });
+    
+    html += '</div>';
+    movieGrid.innerHTML = html;
     
     // Add click listeners
     document.querySelectorAll('.ultra-compact-item').forEach(item => {
