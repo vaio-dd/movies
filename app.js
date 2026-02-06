@@ -4,7 +4,7 @@ let movies = [];
 let staff = [];
 let filteredMovies = [];
 let currentView = 'movies';
-let listViewMode = 'compact'; // 'grid' or 'compact'
+let listViewMode = 'ultra-compact'; // 'grid', 'compact', or 'ultra-compact'
 
 // DOM Elements
 const movieGrid = document.getElementById('movieGrid');
@@ -38,14 +38,29 @@ async function init() {
         staff = await staffRes.json();
         filteredMovies = [...movies];
         
+        // Sort by watch_date descending, then by title alphabetically
+        filteredMovies.sort((a, b) => {
+            const dateA = a.watch_date || '';
+            const dateB = b.watch_date || '';
+            
+            // Primary sort: watch_date descending
+            if (dateB !== dateA) {
+                return dateB.localeCompare(dateA);
+            }
+            
+            // Secondary sort: title alphabetically (A-Z)
+            return a.title.localeCompare(b.title);
+        });
+        
         populateFilters();
         renderMovies();
         setupEventListeners();
         
-        // Set compact view as default
-        listViewMode = 'compact';
-        viewCompact.classList.add('active');
-        viewGrid.classList.remove('active');
+        // Set ultra-compact view as default
+        listViewMode = 'ultra-compact';
+        document.getElementById('viewUltraCompact').classList.add('active');
+        document.getElementById('viewGrid').classList.remove('active');
+        document.getElementById('viewCompact').classList.remove('active');
         renderMovies();
     } catch (error) {
         console.error('Failed to load data:', error);
@@ -112,7 +127,13 @@ function renderMovies() {
     
     noResults.classList.add('hidden');
     
-    // Use compact view by default
+    // Use ultra-compact view by default
+    if (listViewMode === 'ultra-compact') {
+        renderUltraCompactView();
+        return;
+    }
+    
+    // Use compact view
     if (listViewMode === 'compact') {
         renderCompactView();
         return;
@@ -189,6 +210,38 @@ function renderCompactView() {
     
     // Add click listeners
     document.querySelectorAll('.compact-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const movie = movies.find(m => m.title === item.dataset.id);
+            if (movie) showMovieDetail(movie);
+        });
+    });
+}
+
+// Render ultra-compact view - single line per movie, no posters
+function renderUltraCompactView() {
+    if (filteredMovies.length === 0) {
+        movieGrid.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+    }
+    
+    noResults.classList.add('hidden');
+    
+    movieGrid.classList.add('ultra-compact');
+    movieGrid.innerHTML = `
+        <div class="compact-container ultra-compact">
+            ${filteredMovies.map(movie => `
+                <div class="compact-item ultra-compact-item" data-id="${movie.title}">
+                    <span class="ultra-date">${movie.watch_date ? movie.watch_date : ''}</span>
+                    <span class="ultra-title">${movie.title}</span>
+                    <span class="ultra-genre">${movie.genre ? movie.genre.split(',')[0] : ''}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    // Add click listeners
+    document.querySelectorAll('.ultra-compact-item').forEach(item => {
         item.addEventListener('click', () => {
             const movie = movies.find(m => m.title === item.dataset.id);
             if (movie) showMovieDetail(movie);
@@ -405,15 +458,24 @@ function filterMovies() {
         return matchesSearch && matchesYear && matchesGenre && matchesRating;
     });
     
-    // Always sort by watch date (descending - newest first)
+    // Always sort by watch date (descending - newest first), then by title alphabetically
     filteredMovies.sort((a, b) => {
         const dateA = a.watch_date || '';
         const dateB = b.watch_date || '';
-        return dateB.localeCompare(dateA);
+        
+        // Primary sort: watch_date descending
+        if (dateB !== dateA) {
+            return dateB.localeCompare(dateA);
+        }
+        
+        // Secondary sort: title alphabetically (A-Z)
+        return a.title.localeCompare(b.title);
     });
     
     // Render based on view mode
-    if (listViewMode === 'compact') {
+    if (listViewMode === 'ultra-compact') {
+        renderUltraCompactView();
+    } else if (listViewMode === 'compact') {
         renderCompactView();
     } else {
         renderMovies();
@@ -492,19 +554,35 @@ function setupEventListeners() {
     genreFilter.addEventListener('change', filterMovies);
     ratingFilter.addEventListener('change', filterMovies);
     
-    // View toggle buttons
+    // View toggle buttons - cycle through: grid -> compact -> ultra-compact -> grid
+    const viewModes = ['grid', 'compact', 'ultra-compact'];
+    
+    const viewGrid = document.getElementById('viewGrid');
+    const viewCompact = document.getElementById('viewCompact');
+    const viewUltraCompact = document.getElementById('viewUltraCompact');
+    
     viewGrid.addEventListener('click', () => {
         listViewMode = 'grid';
         viewGrid.classList.add('active');
         viewCompact.classList.remove('active');
+        viewUltraCompact.classList.remove('active');
         renderMovies();
     });
     
     viewCompact.addEventListener('click', () => {
         listViewMode = 'compact';
-        viewCompact.classList.add('active');
         viewGrid.classList.remove('active');
+        viewCompact.classList.add('active');
+        viewUltraCompact.classList.remove('active');
         renderMovies();
+    });
+    
+    viewUltraCompact.addEventListener('click', () => {
+        listViewMode = 'ultra-compact';
+        viewGrid.classList.remove('active');
+        viewCompact.classList.remove('active');
+        viewUltraCompact.classList.add('active');
+        renderUltraCompactView();
     });
     
     resetBtn.addEventListener('click', resetFilters);
