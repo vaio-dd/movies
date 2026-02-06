@@ -227,10 +227,13 @@ function renderUltraCompactView() {
     
     noResults.classList.add('hidden');
     
-    // Group movies by year
+    // Group movies by year from watch_date
     const moviesByYear = {};
     filteredMovies.forEach(movie => {
-        const year = movie.year || 'Unknown';
+        let year = 'Unknown';
+        if (movie.watch_date) {
+            year = movie.watch_date.split(' ')[0].substring(0, 4); // Extract YYYY from "YYYY-MM-DD"
+        }
         if (!moviesByYear[year]) {
             moviesByYear[year] = [];
         }
