@@ -5,6 +5,7 @@ let staff = [];
 let filteredMovies = [];
 let currentView = 'movies';
 let listViewMode = 'ultra-compact'; // 'grid', 'compact', or 'ultra-compact'
+let sortOrder = 'DESC'; // 'ASC' (oldest first) or 'DESC' (newest first)
 
 // DOM Elements
 const movieGrid = document.getElementById('movieGrid');
@@ -626,7 +627,6 @@ function setupEventListeners() {
     const viewCompact = document.getElementById('viewCompact');
     const viewUltraCompact = document.getElementById('viewUltraCompact');
     const sortToggle = document.getElementById('sortToggle');
-    let sortOrder = 'DESC'; // Default: newest first
     
     viewGrid.addEventListener('click', () => {
         listViewMode = 'grid';
