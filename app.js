@@ -227,11 +227,15 @@ function renderUltraCompactView() {
     
     noResults.classList.add('hidden');
     
-    // Sort ALL movies chronologically (oldest first = #1)
+    // Sort ALL movies based on sortOrder
     const sortedMovies = [...filteredMovies].sort((a, b) => {
         const dateA = a.watch_date ? a.watch_date.split(' ')[0] : '';
         const dateB = b.watch_date ? b.watch_date.split(' ')[0] : '';
-        return dateA.localeCompare(dateB); // ASC - oldest first
+        if (sortOrder === 'ASC') {
+            return dateA.localeCompare(dateB); // Oldest first
+        } else {
+            return dateB.localeCompare(dateA); // Newest first
+        }
     });
     
     // Group sorted movies by year from watch_date
@@ -247,15 +251,25 @@ function renderUltraCompactView() {
         moviesByYear[year].push(movie);
     });
     
-    // Sort years in ascending order (oldest year first) so numbering is sequential
+    // Sort years based on sortOrder
     const sortedYears = Object.keys(moviesByYear).sort((a, b) => {
-        return parseInt(a) - parseInt(b);
+        if (sortOrder === 'ASC') {
+            return parseInt(a) - parseInt(b); // Oldest year first
+        } else {
+            return parseInt(b) - parseInt(a); // Newest year first
+        }
     });
     
     movieGrid.classList.add('ultra-compact');
     
     let html = '<div class="ultra-compact-container">';
     let globalCounter = 1;
+    
+    // Calculate starting number based on sort order
+    if (sortOrder === 'DESC') {
+        // DESC: newest first = highest number first, so start from total
+        globalCounter = sortedMovies.length;
+    }
     
     sortedYears.forEach(year => {
         const moviesInYear = moviesByYear[year];
@@ -279,7 +293,12 @@ function renderUltraCompactView() {
                     <span class="ultra-genre">${movie.genre ? movie.genre.split(',')[0] : ''}</span>
                 </div>
             `;
-            globalCounter++;
+            
+            if (sortOrder === 'ASC') {
+                globalCounter++;
+            } else {
+                globalCounter--;
+            }
         });
     });
     
@@ -606,6 +625,8 @@ function setupEventListeners() {
     const viewGrid = document.getElementById('viewGrid');
     const viewCompact = document.getElementById('viewCompact');
     const viewUltraCompact = document.getElementById('viewUltraCompact');
+    const sortToggle = document.getElementById('sortToggle');
+    let sortOrder = 'DESC'; // Default: newest first
     
     viewGrid.addEventListener('click', () => {
         listViewMode = 'grid';
@@ -629,6 +650,14 @@ function setupEventListeners() {
         viewCompact.classList.remove('active');
         viewUltraCompact.classList.add('active');
         renderUltraCompactView();
+    });
+    
+    sortToggle.addEventListener('click', () => {
+        sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
+        sortToggle.textContent = sortOrder;
+        if (listViewMode === 'ultra-compact') {
+            renderUltraCompactView();
+        }
     });
     
     resetBtn.addEventListener('click', resetFilters);

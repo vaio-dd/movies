@@ -1,0 +1,40 @@
+card_id: e24F4Pm1
+title: Group movies by year sections
+status: completed
+timestamp: 2026-02-06T08:31:00Z
+executed_by: Neo
+
+changes:
+  - file: app.js
+    description: Modified renderUltraCompactView() to group movies by year with headers
+    location: renderUltraCompactView() function
+    details: |
+      - Added grouping logic using moviesByYear object
+      - Years sorted in descending order (newest year first)
+      - Added year header with format "YYYY (N watched)"
+      - Wrapped each year group in year-section divs
+
+  - file: styles.css
+    description: Added CSS styling for year headers in ultra-compact view
+    location: styles.css (after Ultra-Compact View section)
+    details: |
+      - Added .year-section-container, .year-section, .year-header classes
+      - Year headers use accent color with left border accent
+      - Styled to match existing design language
+
+acceptance_criteria:
+  - verified: Year headers appear above each year group
+  - verified: Year header format is "YYYY (N watched)" showing count
+  - verified: Year sections are in descending order (newest year first)
+  - verified: Ultra-compact layout remains (single line per movie)
+  - verified: Click functionality on movies still works
+
+notes:
+  - Year grouping uses movie.year field from data
+  - Count reflects number of movies in that year after filtering
+  - All existing filtering and sorting behavior preserved
+
+trello_comment:
+  status: unable_to_post
+  reason: Browser control service unavailable for direct Trello access; message channel does not support Trello integration
+  signature: "- Neo"

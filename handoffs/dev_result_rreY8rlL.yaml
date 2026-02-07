@@ -1,0 +1,29 @@
+card_id: rreY8rlL
+title: Movies Sort by Watched Date DESC
+status: completed
+timestamp: 2026-02-06T05:18:00Z
+executed_by: Neo
+
+changes:
+  - file: app.js
+    description: Added secondary sort by title alphabetically when watch_date is equal
+    location: filterMovies() function
+
+  - file: app.js
+    description: Added initial sort by watch_date DESC + title alphabetically on app load
+    location: init() function
+
+acceptance_criteria:
+  - verified: User views movie list with no manual sort → movies sorted by watch_date DESC
+  - verified: New movie with watch_date appears at top of list
+  - verified: Same watch_date → secondary sort by title alphabetically
+
+notes:
+  - watch_date format: YYYY-MM-DD (e.g., "2026-01-31 Friday") - confirmed from data/movies.json
+  - Sort applies to both grid and compact views (both use filteredMovies)
+  - Primary sort: watch_date descending (newest first)
+  - Secondary sort: title alphabetically A-Z
+
+trello_comment:
+  status: unable_to_post
+  reason: Browser control service unavailable for direct Trello access; message channel does not support Trello integration
