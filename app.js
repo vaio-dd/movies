@@ -227,7 +227,7 @@ function renderUltraCompactView() {
     
     noResults.classList.add('hidden');
     
-    // Sort ALL movies chronologically by watch_date (oldest first = #1)
+    // Sort ALL movies chronologically (oldest first = #1)
     const sortedMovies = [...filteredMovies].sort((a, b) => {
         const dateA = a.watch_date ? a.watch_date.split(' ')[0] : '';
         const dateB = b.watch_date ? b.watch_date.split(' ')[0] : '';
@@ -247,9 +247,9 @@ function renderUltraCompactView() {
         moviesByYear[year].push(movie);
     });
     
-    // Sort years in descending order (newest year first)
+    // Sort years in ascending order (oldest year first) so numbering is sequential
     const sortedYears = Object.keys(moviesByYear).sort((a, b) => {
-        return parseInt(b) - parseInt(a);
+        return parseInt(a) - parseInt(b);
     });
     
     movieGrid.classList.add('ultra-compact');
