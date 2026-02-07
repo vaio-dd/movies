@@ -652,13 +652,15 @@ function setupEventListeners() {
         renderUltraCompactView();
     });
     
-    sortToggle.addEventListener('click', () => {
-        sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
-        sortToggle.textContent = sortOrder;
-        if (listViewMode === 'ultra-compact') {
-            renderUltraCompactView();
-        }
-    });
+    if (sortToggle) {
+        sortToggle.addEventListener('click', () => {
+            sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
+            sortToggle.textContent = sortOrder;
+            if (listViewMode === 'ultra-compact') {
+                renderUltraCompactView();
+            }
+        });
+    }
     
     resetBtn.addEventListener('click', resetFilters);
     
