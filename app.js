@@ -227,12 +227,19 @@ function renderUltraCompactView() {
     
     noResults.classList.add('hidden');
     
-    // Group movies by year from watch_date
+    // Sort ALL movies chronologically by watch_date (oldest first = #1)
+    const sortedMovies = [...filteredMovies].sort((a, b) => {
+        const dateA = a.watch_date ? a.watch_date.split(' ')[0] : '';
+        const dateB = b.watch_date ? b.watch_date.split(' ')[0] : '';
+        return dateA.localeCompare(dateB); // ASC - oldest first
+    });
+    
+    // Group sorted movies by year from watch_date
     const moviesByYear = {};
-    filteredMovies.forEach(movie => {
+    sortedMovies.forEach(movie => {
         let year = 'Unknown';
         if (movie.watch_date) {
-            year = movie.watch_date.split(' ')[0].substring(0, 4); // Extract YYYY from "YYYY-MM-DD"
+            year = movie.watch_date.split(' ')[0].substring(0, 4);
         }
         if (!moviesByYear[year]) {
             moviesByYear[year] = [];
@@ -245,15 +252,6 @@ function renderUltraCompactView() {
         return parseInt(b) - parseInt(a);
     });
     
-    // Sort movies within each year chronologically by watch_date (MMDD)
-    Object.keys(moviesByYear).forEach(year => {
-        moviesByYear[year].sort((a, b) => {
-            const dateA = a.watch_date ? a.watch_date.split(' ')[0] : '';
-            const dateB = b.watch_date ? b.watch_date.split(' ')[0] : '';
-            return dateA.localeCompare(dateB);
-        });
-    });
-    
     movieGrid.classList.add('ultra-compact');
     
     let html = '<div class="ultra-compact-container">';
@@ -261,9 +259,6 @@ function renderUltraCompactView() {
     
     sortedYears.forEach(year => {
         const moviesInYear = moviesByYear[year];
-        // Use first movie's title in year header
-        const firstMovieTitle = moviesInYear[0].title;
-        
         html += `<div class="ultra-compact-year-header">${year}（${moviesInYear.length}部）</div>`;
         
         moviesInYear.forEach(movie => {
@@ -272,7 +267,7 @@ function renderUltraCompactView() {
             if (movie.watch_date) {
                 const parts = movie.watch_date.split(' ');
                 if (parts.length > 0) {
-                    mmdd = parts[0].substring(5); // Get MM-DD from YYYY-MM-DD
+                    mmdd = parts[0].substring(5);
                 }
             }
             
