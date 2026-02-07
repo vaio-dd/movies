@@ -633,6 +633,7 @@ function setupEventListeners() {
         viewGrid.classList.add('active');
         viewCompact.classList.remove('active');
         viewUltraCompact.classList.remove('active');
+        movieGrid.classList.remove('compact', 'ultra-compact');
         renderMovies();
     });
     
@@ -641,6 +642,7 @@ function setupEventListeners() {
         viewGrid.classList.remove('active');
         viewCompact.classList.add('active');
         viewUltraCompact.classList.remove('active');
+        movieGrid.classList.remove('ultra-compact');
         renderMovies();
     });
     
@@ -649,6 +651,7 @@ function setupEventListeners() {
         viewGrid.classList.remove('active');
         viewCompact.classList.remove('active');
         viewUltraCompact.classList.add('active');
+        movieGrid.classList.remove('compact');
         renderUltraCompactView();
     });
     
