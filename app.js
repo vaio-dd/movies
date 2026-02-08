@@ -634,6 +634,7 @@ function setupEventListeners() {
         viewCompact.classList.remove('active');
         viewUltraCompact.classList.remove('active');
         movieGrid.classList.remove('compact', 'ultra-compact');
+        document.querySelector('.main-content').classList.remove('ultra-compact-mode');
         renderMovies();
     });
     
@@ -643,6 +644,7 @@ function setupEventListeners() {
         viewCompact.classList.add('active');
         viewUltraCompact.classList.remove('active');
         movieGrid.classList.remove('ultra-compact');
+        document.querySelector('.main-content').classList.remove('ultra-compact-mode');
         renderMovies();
     });
     
@@ -652,6 +654,7 @@ function setupEventListeners() {
         viewCompact.classList.remove('active');
         viewUltraCompact.classList.add('active');
         movieGrid.classList.remove('compact');
+        document.querySelector('.main-content').classList.add('ultra-compact-mode');
         renderUltraCompactView();
     });
     

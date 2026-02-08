@@ -933,6 +933,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    padding: 0 0.5rem;
+}
+
+.main-content.ultra-compact-mode {
+    padding: 1rem 1rem;
 }
 
 @media (max-width: 768px) {
