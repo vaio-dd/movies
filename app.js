@@ -130,6 +130,7 @@ function renderMovies() {
     
     // Use ultra-compact view by default
     if (listViewMode === 'ultra-compact') {
+        document.querySelector('.main-content').classList.add('ultra-compact-mode');
         renderUltraCompactView();
         return;
     }
