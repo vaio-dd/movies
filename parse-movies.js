@@ -9,38 +9,44 @@ function parseMovieFile(content) {
   if (frontmatterMatch) {
     const frontmatter = frontmatterMatch[1];
     
-    const titleMatch = frontmatter.match(/title:\s*(.+)/);
+    const titleMatch = frontmatter.match(/^title:[ \t]*([^\n]*)/m);
     if (titleMatch) movie.title = titleMatch[1].trim();
     
-    const yearMatch = frontmatter.match(/year:\s*(\d{4})/);
+    const titleEnMatch = frontmatter.match(/^title_en:[ \t]*([^\n]*)/m);
+    if (titleEnMatch && titleEnMatch[1]) movie.title_en = titleEnMatch[1].trim();
+    
+    const yearMatch = frontmatter.match(/^year:[ \t]*(\d{4})/m);
     if (yearMatch) movie.year = parseInt(yearMatch[1]);
     
-    const watchDateMatch = frontmatter.match(/watch_date:\s*(.+)/);
+    const watchDateMatch = frontmatter.match(/^watch_date:[ \t]*([^\n]*)/m);
     if (watchDateMatch) movie.watch_date = watchDateMatch[1].trim();
     
-    const imdbRatingMatch = frontmatter.match(/imdb_rating:\s*([\d.]+)/);
+    const imdbRatingMatch = frontmatter.match(/^imdb_rating:[ \t]*([\d.]+)/m);
     if (imdbRatingMatch) movie.imdb_rating = parseFloat(imdbRatingMatch[1]);
     
-    const genreMatch = frontmatter.match(/genre:\s*(.+)/);
+    const genreMatch = frontmatter.match(/^genre:[ \t]*([^\n]*)/m);
     if (genreMatch) movie.genre = genreMatch[1].trim();
     
-    const countryMatch = frontmatter.match(/country:\s*(.+)/);
+    const genreEnMatch = frontmatter.match(/^genre_en:[ \t]*([^\n]*)/m);
+    if (genreEnMatch) movie.genre_en = genreEnMatch[1].trim();
+    
+    const countryMatch = frontmatter.match(/^country:[ \t]*([^\n]*)/m);
     if (countryMatch) movie.country = countryMatch[1].trim();
     
-    const directorMatch = frontmatter.match(/director:\s*(.+)/);
+    const directorMatch = frontmatter.match(/^director:[ \t]*([^\n]*)/m);
     if (directorMatch) movie.director = directorMatch[1].trim();
     
-    const actorsMatch = frontmatter.match(/actors:\s*(.+)/);
+    const actorsMatch = frontmatter.match(/^actors:[ \t]*([^\n]*)/m);
     if (actorsMatch) movie.actors = actorsMatch[1].trim();
     
-    const plotMatch = frontmatter.match(/plot:\s*([\s\S]*?)(?=\n(?:---|\w+:|$))/);
+    const plotMatch = frontmatter.match(/^plot:[ \t]*([\s\S]*?)(?=\n(?:---|\w+:|$))/);
     if (plotMatch) movie.plot = plotMatch[1].trim();
     
-    const memoMatch = frontmatter.match(/memo:\s*(.+)/);
+    const memoMatch = frontmatter.match(/^memo:[ \t]*([^\n]*)/m);
     if (memoMatch) movie.memo = memoMatch[1].trim();
     
-    const posterMatch = frontmatter.match(/poster:\s*!\[.*\]\((.+)\)/);
-    if (posterMatch) movie.poster = posterMatch[1];
+    const posterMatch = frontmatter.match(/^poster:[ \t]*(!\[.*\]\((.+)\)|(.+))/m);
+    if (posterMatch) movie.poster = posterMatch[2] || posterMatch[3];
   }
   
   return movie;

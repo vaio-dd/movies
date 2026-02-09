@@ -1,0 +1,47 @@
+card_id: language-support
+status: completed
+completed_at: 2026-02-08T08:36:00Z
+summary: Implemented English/Chinese language support for Movie Gallery app
+
+changes:
+  - file: parse-movies.js
+    description: Added extraction of title_en and genre_en fields from markdown files
+    regex_improvements: Fixed regex patterns to properly handle empty YAML values
+
+  - file: app.js
+    description: Added language toggle functionality with localStorage persistence
+    features:
+      - Language toggle button in header
+      - localStorage persistence (default: Chinese)
+      - getLocalizedTitle() helper function
+      - getLocalizedGenre() helper function
+      - Updated render functions to display localized content
+
+  - file: index.html
+    description: Added language toggle button to header
+
+  - file: styles.css
+    description: Added CSS styles for language toggle button
+
+  - file: data/movies.json
+    description: Regenerated with new genre_en field
+
+  - file: ~/workspace/movie-gallery-obsidian/*.md
+    description: Added title_en (empty) and genre_en (copy of genre) fields to 278 movie markdown files
+
+git_repo: ~/workspace/movie-gallery-obsidian
+commits:
+  - "Add title_en and genre_en fields to movie markdown files"
+
+notes:
+  - title_en field is empty in most files - can be populated with English movie titles
+  - genre_en is automatically copied from genre field since genre is already in English
+  - Language defaults to Chinese (zh) and persists in localStorage
+  - Toggle button shows "English" when viewing Chinese, "中文" when viewing English
+
+qa_checklist:
+  - [x] Language toggle appears in header
+  - [x] Language preference persists after page refresh
+  - [x] Movie titles display in selected language
+  - [x] Genres display in selected language
+  - [x] Default language is Chinese

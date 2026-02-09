@@ -6,6 +6,7 @@ let filteredMovies = [];
 let currentView = 'movies';
 let listViewMode = 'ultra-compact'; // 'grid', 'compact', or 'ultra-compact'
 let sortOrder = 'DESC'; // 'ASC' (oldest first) or 'DESC' (newest first)
+let currentLanguage = localStorage.getItem('movieGalleryLanguage') || 'zh'; // 'zh' for Chinese, 'en' for English
 
 // DOM Elements
 const movieGrid = document.getElementById('movieGrid');
@@ -27,6 +28,42 @@ const staffModalClose = document.getElementById('staffModalClose');
 const navMovies = document.getElementById('navMovies');
 const navStaff = document.getElementById('navStaff');
 const movieFilters = document.getElementById('movieFilters');
+const langToggle = document.getElementById('langToggle');
+
+// Helper function to get title based on language
+function getLocalizedTitle(movie) {
+    if (currentLanguage === 'en' && movie.title_en) {
+        return movie.title_en;
+    }
+    return movie.title;
+}
+
+// Helper function to get genre based on language
+function getLocalizedGenre(movie) {
+    if (currentLanguage === 'en' && movie.genre_en) {
+        return movie.genre_en;
+    }
+    return movie.genre;
+}
+
+// Toggle language
+function toggleLanguage() {
+    currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+    localStorage.setItem('movieGalleryLanguage', currentLanguage);
+    updateLanguageButton();
+    renderMovies();
+    if (currentView === 'movies') {
+        populateFilters();
+    }
+}
+
+// Update language button text
+function updateLanguageButton() {
+    if (langToggle) {
+        langToggle.textContent = currentLanguage === 'zh' ? 'English' : '中文';
+        langToggle.title = currentLanguage === 'zh' ? 'Switch to English' : '切换到中文';
+    }
+}
 
 // Initialize
 async function init() {
@@ -56,6 +93,7 @@ async function init() {
         populateFilters();
         renderMovies();
         setupEventListeners();
+        updateLanguageButton();
         
         // Set ultra-compact view as default
         listViewMode = 'ultra-compact';
@@ -145,20 +183,20 @@ function renderMovies() {
         <div class="movie-card" data-id="${movie.title}">
             <div class="poster-container">
                 <img src="${getPosterUrl(movie)}" 
-                     alt="${movie.title}" 
+                     alt="${getLocalizedTitle(movie)}" 
                      class="poster"
                      onerror="this.src='${getPosterUrl(movie)}'">
                 ${movie.imdb_rating ? `<span class="rating-badge">★ ${movie.imdb_rating}</span>` : ''}
             </div>
             <div class="card-content">
-                <h3 class="movie-title">${movie.title}</h3>
+                <h3 class="movie-title">${getLocalizedTitle(movie)}</h3>
                 <div class="movie-meta">
                     <span class="movie-year">${movie.year}</span>
                 </div>
                 ${movie.watch_date ? `<div class="watch-date">📅 ${formatWatchDate(movie.watch_date)}</div>` : ''}
                 <div class="card-extra">
                     ${movie.director ? `<div class="card-director">🎬 ${movie.director}</div>` : ''}
-                    ${movie.genre ? `<div class="card-genre">${movie.genre.split(',')[0]}</div>` : ''}
+                    ${movie.genre ? `<div class="card-genre">${getLocalizedGenre(movie).split(',')[0]}</div>` : ''}
                     ${movie.actors && movie.actors !== '[]' ? `<div class="card-actors">🎭 ${movie.actors.replace(/\[\[|\]\]/g, '')}</div>` : ''}
                 </div>
             </div>
@@ -189,15 +227,15 @@ function renderCompactView() {
             ${filteredMovies.map(movie => `
                 <div class="compact-item" data-id="${movie.title}">
                     <img src="${getPosterUrl(movie)}" 
-                         alt="${movie.title}" 
+                         alt="${getLocalizedTitle(movie)}" 
                          class="compact-poster"
                          onerror="this.src='${getPosterUrl(movie)}'">
                     <div class="compact-info">
-                        <span class="compact-title">${movie.title}</span>
+                        <span class="compact-title">${getLocalizedTitle(movie)}</span>
                         <div class="compact-meta">
                             <span class="compact-date">${movie.watch_date ? formatWatchDate(movie.watch_date) : ''}</span>
                             ${movie.imdb_rating ? `<span class="compact-rating">★ ${movie.imdb_rating}</span>` : ''}
-                            ${movie.genre ? `<span class="compact-genre">${movie.genre.split(',')[0]}</span>` : ''}
+                            ${movie.genre ? `<span class="compact-genre">${getLocalizedGenre(movie).split(',')[0]}</span>` : ''}
                         </div>
                     </div>
                     <div class="compact-extra">
@@ -289,9 +327,9 @@ function renderUltraCompactView() {
             html += `
                 <div class="ultra-compact-item" data-id="${movie.title}">
                     <span class="ultra-num">${globalCounter}.</span>
-                    <span class="ultra-title">${movie.title}</span>
+                    <span class="ultra-title">${getLocalizedTitle(movie)}</span>
                     <span class="ultra-date">${mmdd}</span>
-                    <span class="ultra-genre">${movie.genre ? movie.genre.split(',')[0] : ''}</span>
+                    <span class="ultra-genre">${movie.genre ? getLocalizedGenre(movie).split(',')[0] : ''}</span>
                 </div>
             `;
             
@@ -370,15 +408,15 @@ function showMovieDetail(movie) {
     modalBody.innerHTML = `
         <div class="modal-header">
             <img src="${getPosterUrl(movie)}" 
-                 alt="${movie.title}" 
+                 alt="${getLocalizedTitle(movie)}" 
                  class="modal-poster"
                  onerror="this.src='${getPosterUrl(movie)}'">
             <div class="modal-info">
-                <h2>${movie.title}</h2>
+                <h2>${getLocalizedTitle(movie)}</h2>
                 <div class="modal-meta">
                     ${movie.year ? `<span class="meta-tag"><strong>Year:</strong> ${movie.year}</span>` : ''}
                     ${movie.imdb_rating ? `<span class="meta-tag"><strong>Rating:</strong> ★ ${movie.imdb_rating}</span>` : ''}
-                    ${movie.genre ? `<span class="meta-tag"><strong>Genre:</strong> ${movie.genre}</span>` : ''}
+                    ${movie.genre ? `<span class="meta-tag"><strong>Genre:</strong> ${getLocalizedGenre(movie)}</span>` : ''}
                     ${movie.country ? `<span class="meta-tag"><strong>Country:</strong> ${movie.country}</span>` : ''}
                 </div>
             </div>
@@ -682,6 +720,11 @@ function setupEventListeners() {
             closeStaffModal();
         }
     });
+    
+    // Language toggle
+    if (langToggle) {
+        langToggle.addEventListener('click', toggleLanguage);
+    }
     
     // Auto-hide header on mobile scroll
     let lastScrollY = window.scrollY;

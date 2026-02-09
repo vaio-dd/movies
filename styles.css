@@ -75,6 +75,27 @@ body {
     border-color: var(--accent);
 }
 
+.language-toggle {
+    margin-left: 1rem;
+}
+
+.lang-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.lang-btn:hover {
+    background: var(--accent);
+    color: var(--text-primary);
+}
+
 /* Filters */
 .filters {
     display: flex;
