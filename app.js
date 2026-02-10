@@ -80,8 +80,13 @@ function toggleSort() {
     if (sortToggle) {
         sortToggle.textContent = SORT_ICONS[sortOrder];
     }
+    // Re-render based on current view mode
     if (listViewMode === 'ultra-compact') {
         renderUltraCompactView();
+    } else if (listViewMode === 'compact') {
+        renderCompactView();
+    } else {
+        renderMovies();
     }
 }
 
