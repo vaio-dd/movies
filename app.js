@@ -7,6 +7,7 @@ let currentView = 'movies';
 let listViewMode = 'ultra-compact'; // 'grid', 'compact', or 'ultra-compact'
 let sortOrder = 'DESC'; // 'ASC' (oldest first) or 'DESC' (newest first)
 let currentLanguage = localStorage.getItem('movieGalleryLanguage') || 'zh'; // 'zh' for Chinese, 'en' for English
+let filtersVisible = localStorage.getItem('movieGalleryFiltersVisible') === 'true';
 
 // DOM Elements
 const movieGrid = document.getElementById('movieGrid');
@@ -29,6 +30,31 @@ const navMovies = document.getElementById('navMovies');
 const navStaff = document.getElementById('navStaff');
 const movieFilters = document.getElementById('movieFilters');
 const langToggle = document.getElementById('langToggle');
+const filterToggle = document.getElementById('filterToggle');
+
+// Toggle filters visibility
+function toggleFilters() {
+    filtersVisible = !filtersVisible;
+    localStorage.setItem('movieGalleryFiltersVisible', filtersVisible);
+    updateFiltersVisibility();
+}
+
+// Update filters visibility based on state
+function updateFiltersVisibility() {
+    if (movieFilters) {
+        if (filtersVisible) {
+            movieFilters.classList.remove('hidden');
+            if (filterToggle) {
+                filterToggle.classList.add('active');
+            }
+        } else {
+            movieFilters.classList.add('hidden');
+            if (filterToggle) {
+                filterToggle.classList.remove('active');
+            }
+        }
+    }
+}
 
 // Helper function to get title based on language
 function getLocalizedTitle(movie) {
@@ -724,6 +750,13 @@ function setupEventListeners() {
     // Language toggle
     if (langToggle) {
         langToggle.addEventListener('click', toggleLanguage);
+    }
+    
+    // Filter toggle
+    if (filterToggle) {
+        filterToggle.addEventListener('click', toggleFilters);
+        // Initialize filters visibility
+        updateFiltersVisibility();
     }
     
     // Auto-hide header on mobile scroll

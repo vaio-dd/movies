@@ -77,6 +77,30 @@ body {
 
 .language-toggle {
     margin-left: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-toggle {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.filter-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.filter-toggle.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
 }
 
 .lang-btn {
