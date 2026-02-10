@@ -16,6 +16,12 @@ const VIEW_ICONS = {
     'ultra-compact': '≡'
 };
 
+// Sort order icons
+const SORT_ICONS = {
+    'ASC': '↑',
+    'DESC': '↓'
+};
+
 // Language labels (show current language)
 const LANGUAGE_LABELS = {
     'zh': '🇨🇳',
@@ -64,6 +70,18 @@ function updateLanguageButton() {
     if (langToggle) {
         langToggle.textContent = LANGUAGE_LABELS[currentLanguage];
         langToggle.title = currentLanguage === 'zh' ? 'Switch to English' : '切换到中文';
+    }
+}
+
+// Toggle sort order
+function toggleSort() {
+    sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
+    localStorage.setItem('movieGallerySortOrder', sortOrder);
+    if (sortToggle) {
+        sortToggle.textContent = SORT_ICONS[sortOrder];
+    }
+    if (listViewMode === 'ultra-compact') {
+        renderUltraCompactView();
     }
 }
 
@@ -740,16 +758,6 @@ function setupEventListeners() {
     viewCompact.addEventListener('click', () => setViewMode('compact'));
     viewUltraCompact.addEventListener('click', () => setViewMode('ultra-compact'));
     
-    if (sortToggle) {
-        sortToggle.addEventListener('click', () => {
-            sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
-            sortToggle.textContent = sortOrder;
-            if (listViewMode === 'ultra-compact') {
-                renderUltraCompactView();
-            }
-        });
-    }
-    
     resetBtn.addEventListener('click', resetFilters);
     
     navMovies.addEventListener('click', (e) => { e.preventDefault(); switchView('movies'); });
@@ -782,16 +790,9 @@ function setupEventListeners() {
     }
     
     if (sortToggle) {
-        sortToggle.addEventListener('click', () => {
-            sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
-            localStorage.setItem('movieGallerySortOrder', sortOrder);
-            sortToggle.textContent = sortOrder;
-            if (listViewMode === 'ultra-compact') {
-                renderUltraCompactView();
-            }
-        });
-        // Set initial state
-        sortToggle.textContent = sortOrder;
+        sortToggle.addEventListener('click', toggleSort);
+        // Set initial icon based on saved sort order
+        sortToggle.textContent = SORT_ICONS[sortOrder];
     }
     
     if (searchToggle) {
