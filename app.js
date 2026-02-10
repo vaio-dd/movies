@@ -250,6 +250,33 @@ function getStaffImageUrl(staffMember) {
     return `https://placehold.co/200x300/${color.replace('#', '')}/ffffff?text=${encodeURIComponent(staffMember.name.substring(0, 10))}`;
 }
 
+// Helper function to group movies by year
+function groupMoviesByYear(moviesList) {
+    const moviesByYear = {};
+    moviesList.forEach(movie => {
+        let year = 'Unknown';
+        if (movie.watch_date) {
+            year = movie.watch_date.split(' ')[0].substring(0, 4);
+        }
+        if (!moviesByYear[year]) {
+            moviesByYear[year] = [];
+        }
+        moviesByYear[year].push(movie);
+    });
+    return moviesByYear;
+}
+
+// Helper function to get sorted years
+function getSortedYears(moviesByYear) {
+    return Object.keys(moviesByYear).sort((a, b) => {
+        if (sortOrder === 'ASC') {
+            return parseInt(a) - parseInt(b); // Oldest year first
+        } else {
+            return parseInt(b) - parseInt(a); // Newest year first
+        }
+    });
+}
+
 // Render movie grid
 function renderMovies() {
     if (filteredMovies.length === 0) {
@@ -273,7 +300,20 @@ function renderMovies() {
     }
     
     movieGrid.classList.remove('compact', 'ultra-compact');
-    movieGrid.innerHTML = filteredMovies.map(movie => `
+    
+    // Group movies by year
+    const moviesByYear = groupMoviesByYear(filteredMovies);
+    const sortedYears = getSortedYears(moviesByYear);
+    
+    let html = '<div class="year-section-container">';
+    
+    sortedYears.forEach(year => {
+        const moviesInYear = moviesByYear[year];
+        html += `<div class="year-header">${year}（${moviesInYear.length}部）</div>`;
+        html += '<div class="movie-grid">';
+        
+        moviesInYear.forEach(movie => {
+            html += `
         <div class="movie-card" data-id="${movie.title}">
             <div class="poster-container">
                 <img src="${getPosterUrl(movie)}" 
@@ -294,8 +334,14 @@ function renderMovies() {
                     ${movie.actors && movie.actors !== '[]' ? `<div class="card-actors">🎭 ${movie.actors.replace(/\[\[|\]\]/g, '')}</div>` : ''}
                 </div>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+        });
+        
+        html += '</div>';
+    });
+    
+    html += '</div>';
+    movieGrid.innerHTML = html;
     
     document.querySelectorAll('.movie-card').forEach(card => {
         card.addEventListener('click', () => {
@@ -305,7 +351,7 @@ function renderMovies() {
     });
 }
 
-// Render compact view - simple list ordered by watch date
+// Render compact view - simple list with year groups
 function renderCompactView() {
     if (filteredMovies.length === 0) {
         movieGrid.innerHTML = '';
@@ -315,10 +361,20 @@ function renderCompactView() {
     
     noResults.classList.add('hidden');
     
+    // Group movies by year
+    const moviesByYear = groupMoviesByYear(filteredMovies);
+    const sortedYears = getSortedYears(moviesByYear);
+    
     movieGrid.classList.add('compact');
-    movieGrid.innerHTML = `
-        <div class="compact-container">
-            ${filteredMovies.map(movie => `
+    
+    let html = '<div class="compact-container">';
+    
+    sortedYears.forEach(year => {
+        const moviesInYear = moviesByYear[year];
+        html += `<div class="year-header">${year}（${moviesInYear.length}部）</div>`;
+        
+        moviesInYear.forEach(movie => {
+            html += `
                 <div class="compact-item" data-id="${movie.title}">
                     <img src="${getPosterUrl(movie)}" 
                          alt="${getLocalizedTitle(movie)}" 
@@ -336,10 +392,12 @@ function renderCompactView() {
                         ${movie.director ? `<span class="compact-director" title="${movie.director}">🎬 ${movie.director}</span>` : ''}
                         ${movie.actors && movie.actors !== '[]' ? `<span class="compact-actors" title="${movie.actors.replace(/\[\[|\]\]/g, '')}">🎭 ${movie.actors.replace(/\[\[|\]\]/g, '')}</span>` : ''}
                     </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+                </div>`;
+        });
+    });
+    
+    html += '</div>';
+    movieGrid.innerHTML = html;
     
     // Add click listeners
     document.querySelectorAll('.compact-item').forEach(item => {
