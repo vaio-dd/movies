@@ -7,7 +7,20 @@ let currentView = 'movies';
 let listViewMode = 'ultra-compact'; // 'grid', 'compact', or 'ultra-compact'
 let sortOrder = 'DESC'; // 'ASC' (oldest first) or 'DESC' (newest first)
 let currentLanguage = localStorage.getItem('movieGalleryLanguage') || 'zh'; // 'zh' for Chinese, 'en' for English
-let filtersVisible = localStorage.getItem('movieGalleryFiltersVisible') === 'true';
+let searchDropdownVisible = false;
+
+// View mode icons
+const VIEW_ICONS = {
+    'grid': '▦',
+    'compact': '☰',
+    'ultra-compact': '≡'
+};
+
+// Language labels
+const LANGUAGE_LABELS = {
+    'zh': 'EN',
+    'en': '中文'
+};
 
 // DOM Elements
 const movieGrid = document.getElementById('movieGrid');
@@ -18,6 +31,7 @@ const genreFilter = document.getElementById('genreFilter');
 const ratingFilter = document.getElementById('ratingFilter');
 const viewGrid = document.getElementById('viewGrid');
 const viewCompact = document.getElementById('viewCompact');
+const viewUltraCompact = document.getElementById('viewUltraCompact');
 const resetBtn = document.getElementById('resetFilters');
 const noResults = document.getElementById('noResults');
 const movieModal = document.getElementById('movieModal');
@@ -28,32 +42,84 @@ const staffModalBody = document.getElementById('staffModalBody');
 const staffModalClose = document.getElementById('staffModalClose');
 const navMovies = document.getElementById('navMovies');
 const navStaff = document.getElementById('navStaff');
-const movieFilters = document.getElementById('movieFilters');
+const searchDropdown = document.getElementById('searchDropdown');
+const viewToggle = document.getElementById('viewToggle');
 const langToggle = document.getElementById('langToggle');
-const filterToggle = document.getElementById('filterToggle');
+const searchToggle = document.getElementById('searchToggle');
+const sortToggle = document.getElementById('sortToggle');
 
-// Toggle filters visibility
-function toggleFilters() {
-    filtersVisible = !filtersVisible;
-    localStorage.setItem('movieGalleryFiltersVisible', filtersVisible);
-    updateFiltersVisibility();
+// Toggle language
+function toggleLanguage() {
+    currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+    localStorage.setItem('movieGalleryLanguage', currentLanguage);
+    updateLanguageButton();
+    renderMovies();
+    if (currentView === 'movies') {
+        populateFilters();
+    }
 }
 
-// Update filters visibility based on state
-function updateFiltersVisibility() {
-    if (movieFilters) {
-        if (filtersVisible) {
-            movieFilters.classList.remove('hidden');
-            if (filterToggle) {
-                filterToggle.classList.add('active');
-            }
-        } else {
-            movieFilters.classList.add('hidden');
-            if (filterToggle) {
-                filterToggle.classList.remove('active');
-            }
-        }
+// Update language button text
+function updateLanguageButton() {
+    if (langToggle) {
+        langToggle.textContent = LANGUAGE_LABELS[currentLanguage];
+        langToggle.title = currentLanguage === 'zh' ? 'Switch to English' : '切换到中文';
     }
+}
+
+// Toggle search dropdown
+function toggleSearchDropdown() {
+    searchDropdownVisible = !searchDropdownVisible;
+    if (searchDropdownVisible) {
+        searchDropdown.classList.remove('hidden');
+        searchToggle.classList.add('active');
+        searchInput.focus();
+    } else {
+        searchDropdown.classList.add('hidden');
+        searchToggle.classList.remove('active');
+    }
+}
+
+// Cycle through view modes
+function cycleViewMode() {
+    const viewModes = ['grid', 'compact', 'ultra-compact'];
+    const currentIndex = viewModes.indexOf(listViewMode);
+    const nextIndex = (currentIndex + 1) % viewModes.length;
+    listViewMode = viewModes[nextIndex];
+    
+    // Update toolbar button
+    if (viewToggle) {
+        viewToggle.textContent = VIEW_ICONS[listViewMode];
+    }
+    
+    // Update view buttons in dropdown
+    document.getElementById('viewGrid').classList.toggle('active', listViewMode === 'grid');
+    document.getElementById('viewCompact').classList.toggle('active', listViewMode === 'compact');
+    document.getElementById('viewUltraCompact').classList.toggle('active', listViewMode === 'ultra-compact');
+    
+    localStorage.setItem('movieGalleryViewMode', listViewMode);
+    renderMovies();
+}
+
+// Set specific view mode
+function setViewMode(mode) {
+    listViewMode = mode;
+    
+    // Update toolbar button
+    if (viewToggle) {
+        viewToggle.textContent = VIEW_ICONS[mode];
+    }
+    
+    // Update dropdown buttons
+    document.getElementById('viewGrid').classList.toggle('active', mode === 'grid');
+    document.getElementById('viewCompact').classList.toggle('active', mode === 'compact');
+    document.getElementById('viewUltraCompact').classList.toggle('active', mode === 'ultra-compact');
+    
+    // Update grid classes
+    movieGrid.classList.remove('compact', 'ultra-compact');
+    
+    localStorage.setItem('movieGalleryViewMode', listViewMode);
+    renderMovies();
 }
 
 // Helper function to get title based on language
@@ -70,25 +136,6 @@ function getLocalizedGenre(movie) {
         return movie.genre_en;
     }
     return movie.genre;
-}
-
-// Toggle language
-function toggleLanguage() {
-    currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
-    localStorage.setItem('movieGalleryLanguage', currentLanguage);
-    updateLanguageButton();
-    renderMovies();
-    if (currentView === 'movies') {
-        populateFilters();
-    }
-}
-
-// Update language button text
-function updateLanguageButton() {
-    if (langToggle) {
-        langToggle.textContent = currentLanguage === 'zh' ? 'English' : '中文';
-        langToggle.title = currentLanguage === 'zh' ? 'Switch to English' : '切换到中文';
-    }
 }
 
 // Initialize
@@ -121,11 +168,15 @@ async function init() {
         setupEventListeners();
         updateLanguageButton();
         
-        // Set ultra-compact view as default
-        listViewMode = 'ultra-compact';
-        document.getElementById('viewUltraCompact').classList.add('active');
-        document.getElementById('viewGrid').classList.remove('active');
-        document.getElementById('viewCompact').classList.remove('active');
+        // Restore view mode from localStorage or default to ultra-compact
+        listViewMode = localStorage.getItem('movieGalleryViewMode') || 'ultra-compact';
+        if (viewToggle) {
+            viewToggle.textContent = VIEW_ICONS[listViewMode];
+        }
+        document.getElementById('viewUltraCompact').classList.toggle('active', listViewMode === 'ultra-compact');
+        document.getElementById('viewGrid').classList.toggle('active', listViewMode === 'grid');
+        document.getElementById('viewCompact').classList.toggle('active', listViewMode === 'compact');
+        
         renderMovies();
     } catch (error) {
         console.error('Failed to load data:', error);
@@ -630,7 +681,7 @@ function switchView(view) {
         navStaff.classList.remove('active');
         movieGrid.classList.remove('hidden');
         staffGrid.classList.add('hidden');
-        movieFilters.classList.remove('hidden');
+        searchDropdown.classList.add('hidden');
         searchInput.placeholder = 'Search movies...';
         filteredMovies = [...movies];
         footerStats.textContent = `Movie Gallery • ${movies.length} Movies • ${staff.length} Staff Members`;
@@ -640,7 +691,7 @@ function switchView(view) {
         navStaff.classList.add('active');
         movieGrid.classList.add('hidden');
         staffGrid.classList.remove('hidden');
-        movieFilters.classList.add('hidden');
+        searchDropdown.classList.add('hidden');
         searchInput.placeholder = 'Search staff...';
         footerStats.textContent = `Staff Directory • ${staff.length} Staff Members • ${movies.length} Movies`;
         renderStaff();
@@ -684,40 +735,10 @@ function setupEventListeners() {
     genreFilter.addEventListener('change', filterMovies);
     ratingFilter.addEventListener('change', filterMovies);
     
-    // View toggle buttons - cycle through: grid -> compact -> ultra-compact -> grid
-    const viewModes = ['grid', 'compact', 'ultra-compact'];
-    
-    const viewGrid = document.getElementById('viewGrid');
-    const viewCompact = document.getElementById('viewCompact');
-    const viewUltraCompact = document.getElementById('viewUltraCompact');
-    const sortToggle = document.getElementById('sortToggle');
-    
-    viewGrid.addEventListener('click', () => {
-        listViewMode = 'grid';
-        viewGrid.classList.add('active');
-        viewCompact.classList.remove('active');
-        viewUltraCompact.classList.remove('active');
-        movieGrid.classList.remove('compact', 'ultra-compact');
-        renderMovies();
-    });
-    
-    viewCompact.addEventListener('click', () => {
-        listViewMode = 'compact';
-        viewGrid.classList.remove('active');
-        viewCompact.classList.add('active');
-        viewUltraCompact.classList.remove('active');
-        movieGrid.classList.remove('ultra-compact');
-        renderMovies();
-    });
-    
-    viewUltraCompact.addEventListener('click', () => {
-        listViewMode = 'ultra-compact';
-        viewGrid.classList.remove('active');
-        viewCompact.classList.remove('active');
-        viewUltraCompact.classList.add('active');
-        movieGrid.classList.remove('compact');
-        renderUltraCompactView();
-    });
+    // View buttons in dropdown
+    viewGrid.addEventListener('click', () => setViewMode('grid'));
+    viewCompact.addEventListener('click', () => setViewMode('compact'));
+    viewUltraCompact.addEventListener('click', () => setViewMode('ultra-compact'));
     
     if (sortToggle) {
         sortToggle.addEventListener('click', () => {
@@ -744,44 +765,32 @@ function setupEventListeners() {
         if (e.key === 'Escape') {
             closeModal();
             closeStaffModal();
+            // Also close search dropdown
+            if (searchDropdownVisible) {
+                toggleSearchDropdown();
+            }
         }
     });
     
-    // Language toggle
+    // Toolbar buttons
     if (langToggle) {
         langToggle.addEventListener('click', toggleLanguage);
     }
     
-    // Filter toggle
-    if (filterToggle) {
-        filterToggle.addEventListener('click', toggleFilters);
-        // Initialize filters visibility
-        updateFiltersVisibility();
+    if (viewToggle) {
+        viewToggle.addEventListener('click', cycleViewMode);
     }
     
-    // Auto-hide header on mobile scroll
-    let lastScrollY = window.scrollY;
-    let ticking = false;
+    if (searchToggle) {
+        searchToggle.addEventListener('click', toggleSearchDropdown);
+    }
     
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                const currentScrollY = window.scrollY;
-                const header = document.querySelector('.header');
-                const isMobile = window.innerWidth <= 768;
-                
-                if (isMobile && currentScrollY > lastScrollY && currentScrollY > 100) {
-                    // Scrolling down - hide header
-                    header.classList.add('header-hidden');
-                } else {
-                    // Scrolling up - show header
-                    header.classList.remove('header-hidden');
-                }
-                
-                lastScrollY = currentScrollY;
-                ticking = false;
-            });
-            ticking = true;
+    // Close search dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (searchDropdownVisible && 
+            !searchDropdown.contains(e.target) && 
+            !searchToggle.contains(e.target)) {
+            toggleSearchDropdown();
         }
     });
 }

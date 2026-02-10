@@ -180,7 +180,7 @@ const searchTitles = {
     'the big short': { title: 'The Big Short', year: 2015 },
     '托斯卡纳艳阳下': { title: 'Under the Tuscan Sun', year: 2003 },
     'Heathers': { title: 'Heathers', year: 1989 },
-    '七面钟': { title: 'Seven Faces', year: 1959 },
+    '七面钟': { title: 'The Seven Dials Mystery', year: 1981 },
     '10号房的客人': { title: 'Guest at Number 10', year: 2025 },
     '007皇家赌场': { title: 'Casino Royale', year: 2006 },
     '007：皇家赌场': { title: 'Casino Royale', year: 2006 },

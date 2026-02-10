@@ -7,54 +7,58 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="header">
+    <header class="header thin-header">
         <div class="header-content">
-            <h1 class="logo">🎬 Movie Gallery</h1>
+            <h1 class="logo small-logo">🎬</h1>
             <nav class="nav-links">
                 <a href="#" id="navMovies" class="nav-link active">Movies</a>
                 <a href="#" id="navStaff" class="nav-link">Staff</a>
             </nav>
+            <div class="toolbar">
+                <button id="viewToggle" class="toolbar-btn" title="View Mode">▦</button>
+                <button id="langToggle" class="toolbar-btn" title="Language">EN</button>
+                <button id="searchToggle" class="toolbar-btn" title="Search">🔍</button>
+            </div>
+        </div>
+        <!-- Search & Filters Dropdown -->
+        <div id="searchDropdown" class="search-dropdown hidden">
             <div class="search-container">
                 <input type="text" id="search" placeholder="Search..." class="search-input">
             </div>
-            <div class="language-toggle">
-                <button id="filterToggle" class="filter-toggle" title="Toggle filters">☰</button>
-                <button id="langToggle" class="lang-btn" title="切换语言">中文</button>
-            </div>
-        </div>
-        <div class="filters" id="movieFilters">
-            <div class="filter-group">
-                <label>View:</label>
-                <div class="view-toggle">
-                    <button id="viewGrid" class="view-btn" title="Grid View">▦</button>
-                    <button id="viewCompact" class="view-btn" title="Compact View">☰</button>
-                    <button id="viewUltraCompact" class="view-btn active" title="Ultra-Compact View">≡</button>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>View:</label>
+                    <div class="view-toggle">
+                        <button id="viewGrid" class="view-btn" title="Grid View">▦</button>
+                        <button id="viewCompact" class="view-btn" title="Compact View">☰</button>
+                        <button id="viewUltraCompact" class="view-btn active" title="Ultra-Compact View">≡</button>
+                    </div>
+                    <button id="sortToggle" class="sort-toggle" title="Toggle ASC/DESC">ASC</button>
                 </div>
-                <button id="sortToggle" class="sort-toggle" title="Toggle ASC/DESC">ASC</button>
+                <div class="filter-group">
+                    <label>Year:</label>
+                    <select id="yearFilter" class="filter-select">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Genre:</label>
+                    <select id="genreFilter" class="filter-select">
+                        <option value="">All Genres</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Rating:</label>
+                    <select id="ratingFilter" class="filter-select">
+                        <option value="">All Ratings</option>
+                        <option value="9">9+ Excellent</option>
+                        <option value="8">8+ Great</option>
+                        <option value="7">7+ Good</option>
+                        <option value="6">6+ Fair</option>
+                    </select>
+                </div>
+                <button id="resetFilters" class="reset-btn">Reset</button>
             </div>
-            <div class="filter-group">
-                <label>Year:</label>
-                <select id="yearFilter" class="filter-select">
-                    <option value="">All Years</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Genre:</label>
-                <select id="genreFilter" class="filter-select">
-                    <option value="">All Genres</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Rating:</label>
-                <select id="ratingFilter" class="filter-select">
-                    <option value="">All Ratings</option>
-                    <option value="9">9+ Excellent</option>
-                    <option value="8">8+ Great</option>
-                    <option value="7">7+ Good</option>
-                    <option value="6">6+ Fair</option>
-                </select>
-            </div>
-            <button id="resetFilters" class="reset-btn">Reset Filters</button>
         </div>
     </header>
 
