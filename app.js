@@ -16,10 +16,10 @@ const VIEW_ICONS = {
     'ultra-compact': '≡'
 };
 
-// Language labels
+// Language labels (show current language)
 const LANGUAGE_LABELS = {
-    'zh': '🇺🇸',
-    'en': '🇨🇳'
+    'zh': '🇨🇳',
+    'en': '🇺🇸'
 };
 
 // DOM Elements
