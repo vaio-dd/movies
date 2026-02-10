@@ -5,7 +5,7 @@ let staff = [];
 let filteredMovies = [];
 let currentView = 'movies';
 let listViewMode = 'ultra-compact'; // 'grid', 'compact', or 'ultra-compact'
-let sortOrder = 'DESC'; // 'ASC' (oldest first) or 'DESC' (newest first)
+let sortOrder = localStorage.getItem('movieGallerySortOrder') || 'DESC'; // 'ASC' (oldest first) or 'DESC' (newest first)
 let currentLanguage = localStorage.getItem('movieGalleryLanguage') || 'zh'; // 'zh' for Chinese, 'en' for English
 let searchDropdownVisible = false;
 
@@ -779,6 +779,19 @@ function setupEventListeners() {
     
     if (viewToggle) {
         viewToggle.addEventListener('click', cycleViewMode);
+    }
+    
+    if (sortToggle) {
+        sortToggle.addEventListener('click', () => {
+            sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
+            localStorage.setItem('movieGallerySortOrder', sortOrder);
+            sortToggle.textContent = sortOrder;
+            if (listViewMode === 'ultra-compact') {
+                renderUltraCompactView();
+            }
+        });
+        // Set initial state
+        sortToggle.textContent = sortOrder;
     }
     
     if (searchToggle) {
