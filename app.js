@@ -272,7 +272,7 @@ function renderMovies() {
         return;
     }
     
-    movieGrid.classList.remove('compact');
+    movieGrid.classList.remove('compact', 'ultra-compact');
     movieGrid.innerHTML = filteredMovies.map(movie => `
         <div class="movie-card" data-id="${movie.title}">
             <div class="poster-container">
