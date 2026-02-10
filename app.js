@@ -80,14 +80,8 @@ function toggleSort() {
     if (sortToggle) {
         sortToggle.textContent = SORT_ICONS[sortOrder];
     }
-    // Re-render based on current view mode
-    if (listViewMode === 'ultra-compact') {
-        renderUltraCompactView();
-    } else if (listViewMode === 'compact') {
-        renderCompactView();
-    } else {
-        renderMovies();
-    }
+    // Re-sort and re-render
+    filterMovies();
 }
 
 // Toggle search dropdown
@@ -816,15 +810,6 @@ function setupEventListeners() {
     if (searchToggle) {
         searchToggle.addEventListener('click', toggleSearchDropdown);
     }
-    
-    // Close search dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (searchDropdownVisible && 
-            !searchDropdown.contains(e.target) && 
-            !searchToggle.contains(e.target)) {
-            toggleSearchDropdown();
-        }
-    });
 }
 
 init();
