@@ -18,8 +18,8 @@ const VIEW_ICONS = {
 
 // Language labels
 const LANGUAGE_LABELS = {
-    'zh': 'EN',
-    'en': '中文'
+    'zh': '🇺🇸',
+    'en': '🇨🇳'
 };
 
 // DOM Elements
