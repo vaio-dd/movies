@@ -657,14 +657,18 @@ function filterMovies() {
         return matchesSearch && matchesYear && matchesGenre && matchesRating;
     });
     
-    // Always sort by watch date (descending - newest first), then by title alphabetically
+    // Sort by watch date based on sortOrder, then by title alphabetically
     filteredMovies.sort((a, b) => {
         const dateA = a.watch_date || '';
         const dateB = b.watch_date || '';
         
-        // Primary sort: watch_date descending
-        if (dateB !== dateA) {
-            return dateB.localeCompare(dateA);
+        // Primary sort: watch_date based on sortOrder
+        if (dateA !== dateB) {
+            if (sortOrder === 'ASC') {
+                return dateA.localeCompare(dateB); // Oldest first
+            } else {
+                return dateB.localeCompare(dateA); // Newest first
+            }
         }
         
         // Secondary sort: title alphabetically (A-Z)
@@ -687,6 +691,15 @@ function resetFilters() {
     genreFilter.value = '';
     ratingFilter.value = '';
     filteredMovies = [...movies];
+    // Sort based on current sortOrder
+    filteredMovies.sort((a, b) => {
+        const dateA = a.watch_date || '';
+        const dateB = b.watch_date || '';
+        if (dateA !== dateB) {
+            return sortOrder === 'ASC' ? dateA.localeCompare(dateB) : dateB.localeCompare(dateA);
+        }
+        return a.title.localeCompare(b.title);
+    });
     renderMovies();
 }
 
