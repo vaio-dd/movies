@@ -894,6 +894,37 @@ body {
     border-left: 4px solid var(--accent);
 }
 
+/* Year section movie grid */
+.year-movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Medium screens */
+@media (min-width: 1200px) {
+    .year-movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+    .year-movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.75rem;
+    }
+}
+
+/* Extra large screens */
+@media (min-width: 2000px) {
+    .year-movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 2rem;
+    }
+}
+
 /* Ultra-Compact View */
 .movie-grid.ultra-compact {
     display: flex;

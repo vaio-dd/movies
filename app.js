@@ -310,7 +310,7 @@ function renderMovies() {
     sortedYears.forEach(year => {
         const moviesInYear = moviesByYear[year];
         html += `<div class="year-header">${year}（${moviesInYear.length}部）</div>`;
-        html += '<div class="movie-grid">';
+        html += '<div class="year-movies-grid">';
         
         moviesInYear.forEach(movie => {
             html += `
