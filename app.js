@@ -300,7 +300,7 @@ function renderMovies() {
     }
     
     // Render Grid view with year sections
-    movieGrid.className = 'movie-grid'; // Reset to base class only
+    movieGrid.innerHTML = '';
     
     // Group movies by year
     const moviesByYear = groupMoviesByYear(filteredMovies);
