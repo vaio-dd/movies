@@ -5,8 +5,18 @@ let staff = [];
 let filteredMovies = [];
 let currentView = 'movies';
 let listViewMode = 'ultra-compact'; // 'grid', 'compact', or 'ultra-compact'
-let sortOrder = localStorage.getItem('movieGallerySortOrder') || 'DESC'; // 'ASC' (oldest first) or 'DESC' (newest first)
-let currentLanguage = localStorage.getItem('movieGalleryLanguage') || 'zh'; // 'zh' for Chinese, 'en' for English
+
+// Safe localStorage access (only works in browser)
+const getLocalStorage = (key, defaultValue) => {
+    try {
+        return localStorage.getItem(key) || defaultValue;
+    } catch (e) {
+        return defaultValue;
+    }
+};
+
+let sortOrder = getLocalStorage('movieGallerySortOrder', 'DESC'); // 'ASC' (oldest first) or 'DESC' (newest first)
+let currentLanguage = getLocalStorage('movieGalleryLanguage', 'zh'); // 'zh' for Chinese, 'en' for English
 let searchDropdownVisible = false;
 
 // View mode icons
