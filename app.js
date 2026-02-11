@@ -248,8 +248,13 @@ function getColorForTitle(title) {
     return colors[Math.abs(hash) % colors.length];
 }
 
+// Fallback poster for broken URLs
+const FALLBACK_POSTER = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"><rect fill="%230f3460" width="200" height="300"/><text fill="%23edf2f7" font-family="sans-serif" font-size="14" x="50%" y="45%" text-anchor="middle">No Poster</text></svg>';
+
 function getPosterUrl(movie) {
-    if (movie.poster) return movie.poster;
+    if (movie.poster && !movie.poster.includes('amazon')) {
+        return movie.poster;
+    }
     const color = getColorForTitle(movie.title);
     return `https://placehold.co/200x300/${color.replace('#', '')}/ffffff?text=${encodeURIComponent(movie.title)}`;
 }
@@ -330,7 +335,7 @@ function renderMovies() {
                 <img src="${getPosterUrl(movie)}" 
                      alt="${getLocalizedTitle(movie)}" 
                      class="poster"
-                     onerror="this.src='${getPosterUrl(movie)}'">
+                     onerror="this.src='$FALLBACK_POSTER'">
                 ${movie.imdb_rating ? `<span class="rating-badge">★ ${movie.imdb_rating}</span>` : ''}
             </div>
             <div class="card-content">
@@ -390,7 +395,7 @@ function renderCompactView() {
                     <img src="${getPosterUrl(movie)}" 
                          alt="${getLocalizedTitle(movie)}" 
                          class="compact-poster"
-                         onerror="this.src='${getPosterUrl(movie)}'">
+                         onerror="this.src='$FALLBACK_POSTER'">
                     <div class="compact-info">
                         <span class="compact-title">${getLocalizedTitle(movie)}</span>
                         <div class="compact-meta">
@@ -531,7 +536,7 @@ function renderStaff() {
             <img src="${getStaffImageUrl(member)}" 
                  alt="${member.name}" 
                  class="staff-photo"
-                 onerror="this.src='${getStaffImageUrl(member)}'">
+                 onerror="this.src='$FALLBACK_POSTER'">
             <div class="staff-info">
                 <h3 class="staff-name">${member.name}</h3>
                 <span class="staff-role">${member.role || 'Staff'}</span>
@@ -573,7 +578,7 @@ function showMovieDetail(movie) {
             <img src="${getPosterUrl(movie)}" 
                  alt="${getLocalizedTitle(movie)}" 
                  class="modal-poster"
-                 onerror="this.src='${getPosterUrl(movie)}'">
+                 onerror="this.src='$FALLBACK_POSTER'">
             <div class="modal-info">
                 <h2>${getLocalizedTitle(movie)}</h2>
                 <div class="modal-meta">
@@ -644,7 +649,7 @@ function showStaffDetail(member) {
             <img src="${getStaffImageUrl(member)}" 
                  alt="${member.name}" 
                  class="modal-poster"
-                 onerror="this.src='${getStaffImageUrl(member)}'">
+                 onerror="this.src='$FALLBACK_POSTER'">
             <div class="modal-info">
                 <h2>${member.name}</h2>
                 <div class="modal-meta">
@@ -812,7 +817,7 @@ function setupEventListeners() {
                     <img src="${getStaffImageUrl(member)}" 
                          alt="${member.name}" 
                          class="staff-photo"
-                         onerror="this.src='${getStaffImageUrl(member)}'">
+                         onerror="this.src='$FALLBACK_POSTER'">
                     <div class="staff-info">
                         <h3 class="staff-name">${member.name}</h3>
                         <span class="staff-role">${member.role || 'Staff'}</span>
