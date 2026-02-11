@@ -873,9 +873,9 @@ body {
 
 /* Year Section Headers */
 .year-section-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
 }
 
 .year-section {

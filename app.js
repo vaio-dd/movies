@@ -299,7 +299,8 @@ function renderMovies() {
         return;
     }
     
-    movieGrid.classList.remove('compact', 'ultra-compact');
+    // Render Grid view with year sections
+    movieGrid.className = 'movie-grid'; // Reset to base class only
     
     // Group movies by year
     const moviesByYear = groupMoviesByYear(filteredMovies);
