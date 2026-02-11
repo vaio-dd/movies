@@ -259,6 +259,16 @@ function getPosterUrl(movie) {
     return `https://placehold.co/200x300/${color.replace('#', '')}/ffffff?text=${encodeURIComponent(movie.title)}`;
 }
 
+// High quality poster for modals (larger size)
+function getHighQualityPosterUrl(movie) {
+    if (movie.poster && !movie.poster.includes('amazon')) {
+        // Convert TMDB w500 to larger w780
+        return movie.poster.replace('/w500/', '/w780/');
+    }
+    const color = getColorForTitle(movie.title);
+    return `https://placehold.co/400x600/${color.replace('#', '')}/ffffff?text=${encodeURIComponent(movie.title)}`;
+}
+
 function getStaffImageUrl(staffMember) {
     if (staffMember.image) return staffMember.image;
     const color = getColorForTitle(staffMember.name);
@@ -575,7 +585,7 @@ function showMovieDetail(movie) {
     
     modalBody.innerHTML = `
         <div class="modal-header">
-            <img src="${getPosterUrl(movie)}" 
+            <img src="${getHighQualityPosterUrl(movie)}" 
                  alt="${getLocalizedTitle(movie)}" 
                  class="modal-poster"
                  onerror="this.src='$FALLBACK_POSTER'">
