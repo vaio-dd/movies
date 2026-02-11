@@ -748,11 +748,6 @@ body {
         gap: 1rem;
     }
     
-    .year-movies-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
-    }
-    
     .modal-header {
         flex-direction: column;
         align-items: center;
@@ -908,6 +903,7 @@ body {
 
 /* Medium screens */
 @media (min-width: 1200px) {
+    .movie-grid,
     .year-movies-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1.5rem;
@@ -916,6 +912,7 @@ body {
 
 /* Large screens */
 @media (min-width: 1600px) {
+    .movie-grid,
     .year-movies-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 1.75rem;
@@ -924,9 +921,19 @@ body {
 
 /* Extra large screens */
 @media (min-width: 2000px) {
+    .movie-grid,
     .year-movies-grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 2rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .movie-grid,
+    .year-movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
     }
 }
 
